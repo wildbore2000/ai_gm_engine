@@ -1,0 +1,82 @@
+{
+  "id": "npc_mira",
+  "name": "Mira Stonewind",
+  "tags": [
+    "npc",
+    "ranger",
+    "human"
+  ],
+  "srd": {
+    "level": 3,
+    "ancestry": "Human",
+    "role": "Ranger",
+    "alignment": "CG",
+    "stats": {
+      "str": 12,
+      "dex": 18,
+      "con": 14,
+      "int": 10,
+      "wis": 16,
+      "cha": 11
+    },
+    "hp": 28,
+    "ac": 17,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 9,
+      "will": 5
+    },
+    "skills": {
+      "survival": 8,
+      "stealth": 7,
+      "diplomacy": 3
+    },
+    "abilities": [
+      "Hunt Prey",
+      "Twin Takedown"
+    ],
+    "inventory": [
+      {
+        "name": "Longbow",
+        "type": "weapon",
+        "qty": 1
+      },
+      {
+        "name": "Healing Potion",
+        "type": "consumable",
+        "qty": 1
+      }
+    ]
+  },
+  "personality": {
+    "temperament": "quiet and observant",
+    "ideals": [
+      "freedom",
+      "nature above civilization"
+    ],
+    "fears": [
+      "being caged"
+    ],
+    "motivations": [
+      "protect wildlands",
+      "redeem family name"
+    ],
+    "flaws": [
+      "acts before asking"
+    ]
+  },
+  "relationships": {
+    "npc_raider_chief": "uncertain ally",
+    "player": "ally"
+  },
+  "memory": [
+    "Defended Greenfall",
+    "Vision from old gods"
+  ],
+  "status": {
+    "location": "greenfall_edge",
+    "faction": "Rangers of the Vale",
+    "mood": "cautious",
+    "current_task": "patrol"
+  }
+}

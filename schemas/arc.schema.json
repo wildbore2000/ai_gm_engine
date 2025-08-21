@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/arc.json",
+  "title": "Arc",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "stage",
+    "goal",
+    "progress",
+    "triggers"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure_vector": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}

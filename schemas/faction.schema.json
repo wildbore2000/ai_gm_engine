@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/faction.json",
+  "title": "Faction",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "goals",
+    "resources",
+    "relations"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ideology": {
+      "type": "string"
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "stability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "leaders": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}

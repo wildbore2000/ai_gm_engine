@@ -1,0 +1,2671 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.env.example
+CLAUDE.md
+data/entities/npc_mira.json
+data/factions/f_raiders.json
+data/world/arc_cult_rise.json
+data/world/world_after.json
+data/world/world.json
+engine/overseer.py
+engine/rails.py
+index.html
+package.json
+postcss.config.js
+README.md
+run_sim.py
+schemas/arc.schema.json
+schemas/entity.schema.json
+schemas/faction.schema.json
+schemas/gameevent.schema.json
+schemas/worldstate.schema.json
+src/App.tsx
+src/components/EngineEditor.tsx
+src/components/ui/button.tsx
+src/components/ui/card.tsx
+src/components/ui/input.tsx
+src/components/ui/tabs.tsx
+src/components/ui/textarea.tsx
+src/index.css
+src/lib/arcs.ts
+src/lib/entities.ts
+src/lib/events.ts
+src/lib/factions.ts
+src/lib/supabase.ts
+src/lib/worlds.ts
+src/main.tsx
+src/schemas/json-schema-2020-12.json
+src/vite-env.d.ts
+tailwind.config.js
+tsconfig.json
+tsconfig.tsbuildinfo
+vite.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".env.example">
+VITE_SUPABASE_URL=https://YOUR-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+</file>
+
+<file path="CLAUDE.md">
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Architecture Overview
+
+This is an AI Game Master Engine with Supabase backend integration consisting of multiple components:
+
+### Frontend (React/TypeScript)
+- **`src/components/EngineEditor.tsx`**: Main editor component with tabbed interface for editing game data
+- **`src/components/ui/`**: Reusable UI components (buttons, cards, inputs, tabs, textareas)
+- Uses Vite, React, TypeScript, TailwindCSS, ShadCN components, and Framer Motion
+- JSON schema validation using AJV library
+- Supabase integration for data persistence and real-time sync
+
+### Backend Options
+- **Supabase (Primary)**: Postgres database with Row-Level Security, optional Edge Functions for server-side simulation
+- **Local Python (Legacy)**: Pure Python simulation with file-based storage
+  - `engine/overseer.py`: AI/heuristic engine that proposes GameEvents based on world state and tension levels
+  - `engine/rails.py`: Deterministic event handlers that apply GameEvents to modify world state
+  - `run_sim.py`: Main simulation runner that executes overseer passes and applies events
+
+### Data Layer
+- **`data/`**: JSON data files for local development and testing
+- **`schemas/`**: JSON Schema definitions for data validation
+- **Supabase tables**: entities, factions, arcs, worlds, events with real-time capabilities
+
+## Development Commands
+
+### Frontend Development
+```bash
+npm run dev        # Start development server (Vite) on port 5173
+npm run build      # Build for production (TypeScript compilation + Vite build)
+npm run preview    # Preview production build
+```
+
+### Backend Simulation
+```bash
+python run_sim.py  # Run single overseer pass and apply first event
+```
+
+## Key Data Types
+
+The system uses 5 core JSON schemas:
+- **Entity**: NPCs with SRD stats, personality, relationships, and status
+- **Faction**: Groups with goals, resources, stability, and inter-faction relations
+- **WorldState**: Global state including time, weather, locations, faction data, and tension
+- **Arc**: Story arcs with progress tracking and pressure vectors
+- **GameEvent**: Events with type, payload, and priority for world modification
+
+## Environment Setup
+
+Create a `.env` file with Supabase credentials:
+```
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+
+Set up Supabase database using `/supabase/schema.sql` for tables: entities, factions, arcs, worlds, events.
+
+## Development Notes
+
+- World tension drives event generation: low tension → rumors, high tension → dialogue/conflict
+- The frontend editor provides real-time JSON validation and CRUD operations with Supabase sync
+- Supabase Edge Functions can handle server-side simulation and world advancement
+- Local Python simulation remains available for pure file-based development
+- Data files in `data/` provide sample content for testing the simulation loop
+- Row-Level Security policies control data access in Supabase
+</file>
+
+<file path="data/entities/npc_mira.json">
+{
+  "id": "npc_mira",
+  "name": "Mira Stonewind",
+  "tags": [
+    "npc",
+    "ranger",
+    "human"
+  ],
+  "srd": {
+    "level": 3,
+    "ancestry": "Human",
+    "role": "Ranger",
+    "alignment": "CG",
+    "stats": {
+      "str": 12,
+      "dex": 18,
+      "con": 14,
+      "int": 10,
+      "wis": 16,
+      "cha": 11
+    },
+    "hp": 28,
+    "ac": 17,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 9,
+      "will": 5
+    },
+    "skills": {
+      "survival": 8,
+      "stealth": 7,
+      "diplomacy": 3
+    },
+    "abilities": [
+      "Hunt Prey",
+      "Twin Takedown"
+    ],
+    "inventory": [
+      {
+        "name": "Longbow",
+        "type": "weapon",
+        "qty": 1
+      },
+      {
+        "name": "Healing Potion",
+        "type": "consumable",
+        "qty": 1
+      }
+    ]
+  },
+  "personality": {
+    "temperament": "quiet and observant",
+    "ideals": [
+      "freedom",
+      "nature above civilization"
+    ],
+    "fears": [
+      "being caged"
+    ],
+    "motivations": [
+      "protect wildlands",
+      "redeem family name"
+    ],
+    "flaws": [
+      "acts before asking"
+    ]
+  },
+  "relationships": {
+    "npc_raider_chief": "uncertain ally",
+    "player": "ally"
+  },
+  "memory": [
+    "Defended Greenfall",
+    "Vision from old gods"
+  ],
+  "status": {
+    "location": "greenfall_edge",
+    "faction": "Rangers of the Vale",
+    "mood": "cautious",
+    "current_task": "patrol"
+  }
+}
+</file>
+
+<file path="data/factions/f_raiders.json">
+{
+  "id": "f_raiders",
+  "name": "Ash Dune Riders",
+  "tags": [
+    "raiders",
+    "nomads"
+  ],
+  "ideology": "Strength through freedom",
+  "goals": [
+    "control trade routes",
+    "undermine town council"
+  ],
+  "pressure": 0.42,
+  "stability": 0.58,
+  "resources": {
+    "food": 40,
+    "mounts": 25,
+    "weapons": 60
+  },
+  "relations": {
+    "f_town": -35,
+    "f_rangers": -10
+  },
+  "leaders": [
+    "npc_raider_chief"
+  ]
+}
+</file>
+
+<file path="data/world/arc_cult_rise.json">
+{
+  "id": "arc_cult_rise",
+  "title": "Whispers Beneath Greenfall",
+  "stage": "rumors",
+  "goal": "destabilize settlement from within",
+  "progress": 0.22,
+  "triggers": [
+    "nightmares",
+    "missing supplies"
+  ],
+  "beats": [
+    "first rumor",
+    "suspicious sermon",
+    "disappearance"
+  ],
+  "pressure_vector": {
+    "f_town": 0.2,
+    "f_cult": 0.5
+  }
+}
+</file>
+
+<file path="data/world/world_after.json">
+{
+  "time": "Day 12, 03:00",
+  "weather": "rain",
+  "locations": [
+    "greenfall",
+    "greenfall_edge",
+    "old_road"
+  ],
+  "factions": {
+    "f_raiders": {
+      "id": "f_raiders",
+      "name": "Ash Dune Riders",
+      "tags": [
+        "raiders",
+        "nomads"
+      ],
+      "ideology": "Strength through freedom",
+      "goals": [
+        "control trade routes",
+        "undermine town council"
+      ],
+      "pressure": 0.42,
+      "stability": 0.58,
+      "resources": {
+        "food": 40,
+        "mounts": 25,
+        "weapons": 60
+      },
+      "relations": {
+        "f_town": -35,
+        "f_rangers": -10
+      },
+      "leaders": [
+        "npc_raider_chief"
+      ]
+    }
+  },
+  "events": [
+    "raider_scout_spotted",
+    "storm_warning"
+  ],
+  "history_log": [
+    "Day 11: merchant caravan robbed",
+    "Rumor: A child claims the village is under siege\u2014details are inconsistent."
+  ],
+  "tension": 0.47
+}
+</file>
+
+<file path="data/world/world.json">
+{
+  "time": "Day 12, 03:00",
+  "weather": "rain",
+  "locations": [
+    "greenfall",
+    "greenfall_edge",
+    "old_road"
+  ],
+  "factions": {
+    "f_raiders": {
+      "id": "f_raiders",
+      "name": "Ash Dune Riders",
+      "tags": [
+        "raiders",
+        "nomads"
+      ],
+      "ideology": "Strength through freedom",
+      "goals": [
+        "control trade routes",
+        "undermine town council"
+      ],
+      "pressure": 0.42,
+      "stability": 0.58,
+      "resources": {
+        "food": 40,
+        "mounts": 25,
+        "weapons": 60
+      },
+      "relations": {
+        "f_town": -35,
+        "f_rangers": -10
+      },
+      "leaders": [
+        "npc_raider_chief"
+      ]
+    }
+  },
+  "events": [
+    "raider_scout_spotted",
+    "storm_warning"
+  ],
+  "history_log": [
+    "Day 11: merchant caravan robbed"
+  ],
+  "tension": 0.47
+}
+</file>
+
+<file path="engine/overseer.py">
+# engine/overseer.py
+"""Mock Overseer: proposes GameEvents from compact world snapshots.
+Replace with an LLM call or heuristic later."""
+from typing import List, Dict, Any
+
+def overseer_pass(world: Dict[str, Any], arcs: List[Dict[str, Any]], entities: List[Dict[str, Any]], diff: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    tension = world.get("tension", 0.0)
+    proposals: List[Dict[str, Any]] = []
+
+    # Simple heuristic: if tension moderate, seed a rumor; if high, push a parley
+    if tension < 0.6:
+        proposals.append({
+            "id": "ev_rumor_001",
+            "type": "rumor",
+            "title": "Child from the woods",
+            "payload": {
+                "location": "greenfall",
+                "content": "A child claims the village is under siege—details are inconsistent.",
+                "impacts": {"f_town": {"stability": -0.03}}
+            },
+            "priority": 3,
+            "tags": ["hook","investigation"]
+        })
+    else:
+        proposals.append({
+            "id": "ev_negotiation_offer",
+            "type": "dialogue",
+            "title": "Parley with the Ash Dune Riders",
+            "payload": {
+                "speaker": "npc_raider_chief",
+                "targets": ["player"],
+                "options": ["pay_tribute","joint_raid","betray_town","refuse"],
+                "skill_checks": {"diplomacy": 18, "deception": 16}
+            },
+            "priority": 4
+        })
+
+    return proposals
+</file>
+
+<file path="engine/rails.py">
+# engine/rails.py
+"""Rails: deterministic handlers that apply GameEvents to the world state."""
+from typing import Dict, Any, List
+
+def apply_event(world: Dict[str, Any], event: Dict[str, Any]) -> Dict[str, Any]:
+    etype = event.get("type")
+    payload = event.get("payload", {})
+    diff: Dict[str, Any] = {"world": {}, "log": []}
+
+    if etype == "rumor":
+        content = payload.get("content", "") 
+        world.setdefault("history_log", []).append(f"Rumor: {content}")
+        # Apply simple stability impact if present
+        impacts = payload.get("impacts", {})
+        for fac, changes in impacts.items():
+            # In this minimal demo, factions are keyed in world["factions"]
+            if fac in world.get("factions", {}):
+                for k, v in changes.items():
+                    # Only handle numeric fields
+                    if isinstance(v, (int, float)):
+                        old = world["factions"][fac].get(k, 0.0)
+                        world["factions"][fac][k] = old + v
+                        diff["world"].setdefault("factions", {}).setdefault(fac, {})[k] = {"from": old, "to": old+v}
+        diff["log"].append(f"Applied rumor '{event.get('title')}'")    
+
+    elif etype == "dialogue":
+        # In a real engine, push a dialogue state machine / UI hook
+        world.setdefault("events", []).append("dialogue_available")
+        diff["log"].append(f"Dialogue queued: {payload.get('speaker','unknown')} -> {payload.get('targets', [])}")
+    else:
+        diff["log"].append(f"Unhandled event type: {etype}")
+
+    return diff
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engine Editor UI</title>
+    <style>
+      :root { --bg: #0b0d12; --card:#121620; --text:#e6ecff; --muted:#99a3c2; --accent:#5476ff; --border:#1f2635; }
+      html, body, #root { height: 100%; }
+      body { margin:0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+      .container { padding: 24px; max-width: 1100px; margin: 0 auto; }
+      .muted { color: var(--muted); }
+      .grid { display: grid; gap: 12px; }
+      .row { display:flex; align-items:center; gap: 8px; }
+      .spacer { flex:1; }
+      .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      .textarea { width: 100%; min-height: 320px; resize: vertical; }
+      .error { color: #ff6b6b; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "engine-editor-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.55.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.441.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.23",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^17.2.1",
+    "postcss": "^8.5.6",
+    "repomix": "^1.3.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+// postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+</file>
+
+<file path="README.md">
+# AI GM Engine
+
+An experimental **AI-driven Game Master engine** inspired by tabletop RPGs and games like *RimWorld*, *Baldur’s Gate*, and *Neverwinter Nights*.  
+The engine is structured around JSON-defined entities, factions, arcs, and worlds, with Supabase handling persistence and optional Edge Functions for simulation.
+
+---
+
+## Features
+- **Entity/Faction/Arc/World Manager** – UI for creating and editing game objects
+- **JSON Schema Validation** – all game data conforms to defined structures
+- **Supabase Integration** – store game data in Postgres with Row-Level Security
+- **Edge Functions (optional)** – run server-side world updates, log events, advance time
+- **Modern UI** – React + Vite + TailwindCSS + ShadCN components
+
+---
+
+## Getting Started
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/YOURNAME/ai_gm_engine.git
+cd ai_gm_engine
+npm install
+````
+
+### 2. Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+
+Restart your dev server after adding env vars.
+
+### 3. Run Locally
+
+```bash
+npm run dev
+```
+
+Visit: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## Supabase Setup
+
+1. Create a Supabase project at [https://app.supabase.com](https://app.supabase.com).
+2. Go to **Project Settings → API**:
+
+   * Copy your `Project URL`
+   * Copy your `anon` key (for browser)
+   * Copy your `service_role` key (for server/Edge Functions)
+3. Open the **SQL Editor** and run the schema in [`/supabase/schema.sql`](./supabase/schema.sql) (see `docs/` if not present).
+4. Enable **Row Level Security** and run the provided policies (same script as above).
+
+### Tables created:
+
+* `entities`
+* `factions`
+* `arcs`
+* `worlds`
+* `events`
+
+---
+
+## Development Notes
+
+* **CRUD:** The editor tabs let you create, update, delete, and import/export JSON definitions.
+* **Validation:** Uses [AJV](https://ajv.js.org/) for schema validation.
+* **Realtime:** Supabase Realtime can auto-sync entities/factions between clients.
+* **Storage Choice:** Default backend is Supabase (Postgres). You could also use Mongo, SQLite, or files if preferred.
+* **UI Components:** TailwindCSS + ShadCN (Tabs, Cards, Buttons, Sidebar).
+
+---
+
+## Edge Functions
+
+Optional server-side logic can live in Supabase Functions.
+
+Example: **advanceWorldTick**
+
+```bash
+supabase functions new advanceWorldTick
+```
+
+Example function body:
+
+```ts
+Deno.serve(async (req) => {
+  const { world_id, hours } = await req.json();
+  // update world time + insert event
+  return new Response(JSON.stringify({ ok: true, world_id, hours }), {
+    headers: { "content-type": "application/json" }
+  });
+});
+```
+
+Deploy:
+
+```bash
+supabase functions deploy advanceWorldTick --project-ref YOUR_PROJECT_REF
+```
+
+---
+
+## Roadmap
+
+* [x] Entities Manager
+* [x] Factions & Arcs Manager
+* [x] World Editor
+* [ ] Supabase integration (CRUD + Realtime)
+* [ ] Edge Functions for simulation (advance time, spawn events)
+* [ ] Encounter mode (turn-based resolution)
+* [ ] Narrative generator driven by LLM
+
+---
+
+## License
+
+MIT — build cool things.
+</file>
+
+<file path="run_sim.py">
+# run_sim.py
+import json, os
+from engine.overseer import overseer_pass
+from engine.rails import apply_event
+
+ROOT = os.path.dirname(__file__)
+
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+def main():
+    world = load_json(os.path.join(ROOT, 'data/world/world.json'))
+    arcs = [load_json(os.path.join(ROOT, 'data/world/arc_cult_rise.json'))]
+    entities = [load_json(os.path.join(ROOT, 'data/entities/npc_mira.json'))]
+
+    print('World tension:', world.get('tension'))
+    events = overseer_pass(world, arcs, entities, diff=None)
+
+    print(f"Proposed {len(events)} event(s):")
+    for e in events:
+        print('-', e['title'], f"({e['type']})" )
+
+    # Apply first event deterministically
+    if events:
+        diff = apply_event(world, events[0])
+        print('\nApplied first event. Diff:')
+        print(json.dumps(diff, indent=2))
+
+        # Save updated world snapshot
+        with open(os.path.join(ROOT, 'data/world/world_after.json'), 'w') as f:
+            json.dump(world, f, indent=2)
+        print("\nUpdated world saved to data/world/world_after.json")
+
+if __name__ == '__main__':
+    main()
+</file>
+
+<file path="schemas/arc.schema.json">
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/arc.json",
+  "title": "Arc",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "stage",
+    "goal",
+    "progress",
+    "triggers"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure_vector": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+</file>
+
+<file path="schemas/entity.schema.json">
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/entity.json",
+  "title": "Entity",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "tags",
+    "srd",
+    "personality",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "srd": {
+      "type": "object",
+      "required": [
+        "level",
+        "ancestry",
+        "role",
+        "stats",
+        "hp",
+        "ac"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer"
+        },
+        "ancestry": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "alignment": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "required": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha"
+          ],
+          "properties": {
+            "str": {
+              "type": "integer"
+            },
+            "dex": {
+              "type": "integer"
+            },
+            "con": {
+              "type": "integer"
+            },
+            "int": {
+              "type": "integer"
+            },
+            "wis": {
+              "type": "integer"
+            },
+            "cha": {
+              "type": "integer"
+            }
+          }
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "ac": {
+          "type": "integer"
+        },
+        "saves": {
+          "type": "object",
+          "properties": {
+            "fortitude": {
+              "type": "integer"
+            },
+            "reflex": {
+              "type": "integer"
+            },
+            "will": {
+              "type": "integer"
+            }
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "qty": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "personality": {
+      "type": "object",
+      "properties": {
+        "temperament": {
+          "type": "string"
+        },
+        "ideals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fears": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "motivations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "flaws": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "memory": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "location",
+        "faction",
+        "mood"
+      ],
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "faction": {
+          "type": "string"
+        },
+        "mood": {
+          "type": "string"
+        },
+        "current_task": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+</file>
+
+<file path="schemas/faction.schema.json">
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/faction.json",
+  "title": "Faction",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "goals",
+    "resources",
+    "relations"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ideology": {
+      "type": "string"
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "stability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "leaders": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+</file>
+
+<file path="schemas/gameevent.schema.json">
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/gameevent.json",
+  "title": "GameEvent",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "title",
+    "payload",
+    "priority"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "spawn",
+        "dialogue",
+        "modify",
+        "rumor",
+        "quest",
+        "environment"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+</file>
+
+<file path="schemas/worldstate.schema.json">
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/worldstate.json",
+  "title": "WorldState",
+  "type": "object",
+  "required": [
+    "time",
+    "weather",
+    "locations",
+    "factions",
+    "events",
+    "history_log"
+  ],
+  "properties": {
+    "time": {
+      "type": "string"
+    },
+    "weather": {
+      "type": "string"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "factions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "schema/faction.json"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "history_log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tension": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+</file>
+
+<file path="src/App.tsx">
+import React from 'react'
+import EngineEditor from './components/EngineEditor'
+
+export default function App() {
+  return (
+    <div className="container">
+      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>Engine Editor UI (Prototype)</h1>
+      <p className="muted" style={{ marginTop: 0, marginBottom: 16 }}>Edit JSON for Entities, Factions, World, and Arcs with live schema validation.</p>
+      <EngineEditor />
+    </div>
+  )
+}
+</file>
+
+<file path="src/components/EngineEditor.tsx">
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { Download, Upload, CheckCircle2, AlertCircle, Trash2, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
+import Ajv2020 from "ajv/dist/2020";
+import addFormats from "ajv-formats";
+import { motion } from "framer-motion";
+import { listEntities, upsertEntity, deleteEntity } from "@/lib/entities";
+import { listFactions, upsertFaction, deleteFaction } from "@/lib/factions";
+import { listArcs, upsertArc, deleteArc } from "@/lib/arcs";
+import { listWorlds, upsertWorld } from "@/lib/worlds";
+
+
+
+// --- SRD-light JSON Schemas (mirror of the design doc) ---
+const entitySchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "schema/entity.json",
+  title: "Entity",
+  type: "object",
+  required: ["id", "name", "tags", "srd", "personality", "status"],
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    tags: { type: "array", items: { type: "string" } },
+    srd: {
+      type: "object",
+      required: ["level", "ancestry", "role", "stats", "hp", "ac"],
+      properties: {
+        level: { type: "integer" },
+        ancestry: { type: "string" },
+        role: { type: "string" },
+        alignment: { type: "string" },
+        stats: {
+          type: "object",
+          required: ["str", "dex", "con", "int", "wis", "cha"],
+          properties: {
+            str: { type: "integer" },
+            dex: { type: "integer" },
+            con: { type: "integer" },
+            int: { type: "integer" },
+            wis: { type: "integer" },
+            cha: { type: "integer" }
+          }
+        },
+        hp: { type: "integer" },
+        ac: { type: "integer" },
+        saves: {
+          type: "object",
+          properties: {
+            fortitude: { type: "integer" },
+            reflex: { type: "integer" },
+            will: { type: "integer" }
+          }
+        },
+        skills: { type: "object", additionalProperties: { type: "integer" } },
+        abilities: { type: "array", items: { type: "string" } },
+        inventory: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: { name: { type: "string" }, type: { type: "string" }, qty: { type: "integer" } }
+          }
+        }
+      }
+    },
+    personality: {
+      type: "object",
+      properties: {
+        temperament: { type: "string" },
+        ideals: { type: "array", items: { type: "string" } },
+        fears: { type: "array", items: { type: "string" } },
+        motivations: { type: "array", items: { type: "string" } },
+        flaws: { type: "array", items: { type: "string" } }
+      }
+    },
+    relationships: { type: "object", additionalProperties: { type: "string" } },
+    memory: { type: "array", items: { type: "string" } },
+    status: {
+      type: "object",
+      required: ["location", "faction", "mood"],
+      properties: {
+        location: { type: "string" },
+        faction: { type: "string" },
+        mood: { type: "string" },
+        current_task: { type: "string" },
+        flags: { type: "array", items: { type: "string" } }
+      }
+    },
+    custom: { type: "object" }
+  }
+};
+
+const factionSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "schema/faction.json",
+  title: "Faction",
+  type: "object",
+  required: ["id", "name", "goals", "resources", "relations"],
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    tags: { type: "array", items: { type: "string" } },
+    ideology: { type: "string" },
+    goals: { type: "array", items: { type: "string" } },
+    pressure: { type: "number", minimum: 0, maximum: 1 },
+    stability: { type: "number", minimum: 0, maximum: 1 },
+    resources: { type: "object", additionalProperties: { type: "integer" } },
+    relations: { type: "object", additionalProperties: { type: "integer" } },
+    leaders: { type: "array", items: { type: "string" } },
+    custom: { type: "object" }
+  }
+};
+
+const worldSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "schema/worldstate.json",
+  title: "WorldState",
+  type: "object",
+  required: ["time", "weather", "locations", "factions", "events", "history_log"],
+  properties: {
+    time: { type: "string" },
+    weather: { type: "string" },
+    locations: { type: "array", items: { type: "string" } },
+    factions: { type: "object" },
+    events: { type: "array", items: { type: "string" } },
+    history_log: { type: "array", items: { type: "string" } },
+    tension: { type: "number", minimum: 0, maximum: 1 },
+    custom: { type: "object" }
+  }
+};
+
+const arcSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "schema/arc.json",
+  title: "Arc",
+  type: "object",
+  required: ["id", "title", "stage", "goal", "progress", "triggers"],
+  properties: {
+    id: { type: "string" },
+    title: { type: "string" },
+    stage: { type: "string" },
+    goal: { type: "string" },
+    progress: { type: "number", minimum: 0, maximum: 1 },
+    triggers: { type: "array", items: { type: "string" } },
+    beats: { type: "array", items: { type: "string" } },
+    pressure_vector: { type: "object" },
+    owner: { type: "string" },
+    custom: { type: "object" }
+  }
+};
+
+const gameEventSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "schema/gameevent.json",
+  title: "GameEvent",
+  type: "object",
+  required: ["id", "type", "title", "payload", "priority"],
+  properties: {
+    id: { type: "string" },
+    type: { type: "string", enum: ["spawn", "dialogue", "modify", "rumor", "quest", "environment"] },
+    title: { type: "string" },
+    payload: { type: "object" },
+    priority: { type: "integer" },
+    expires_at: { type: "string" },
+    source: { type: "string" },
+    tags: { type: "array", items: { type: "string" } }
+  }
+};
+
+const ajv = new Ajv2020({ allErrors: true, strict: false });
+addFormats(ajv);
+const validateEntity = ajv.compile(entitySchema as any);
+const validateFaction = ajv.compile(factionSchema as any);
+const validateWorld = ajv.compile(worldSchema as any);
+const validateArc = ajv.compile(arcSchema as any);
+const validateEvent = ajv.compile(gameEventSchema as any);
+
+const sampleEntity = {
+  id: "npc_mira",
+  name: "Mira Stonewind",
+  tags: ["npc", "ranger", "human"],
+  srd: {
+    level: 3,
+    ancestry: "Human",
+    role: "Ranger",
+    alignment: "CG",
+    stats: { str: 12, dex: 18, con: 14, int: 10, wis: 16, cha: 11 },
+    hp: 28,
+    ac: 17,
+    saves: { fortitude: 6, reflex: 9, will: 5 },
+    skills: { survival: 8, stealth: 7, diplomacy: 3 },
+    abilities: ["Hunt Prey", "Twin Takedown"],
+    inventory: [
+      { name: "Longbow", type: "weapon", qty: 1 },
+      { name: "Healing Potion", type: "consumable", qty: 1 }
+    ]
+  },
+  personality: {
+    temperament: "quiet and observant",
+    ideals: ["freedom", "nature above civilization"],
+    fears: ["being caged"],
+    motivations: ["protect wildlands", "redeem family name"],
+    flaws: ["acts before asking"]
+  },
+  relationships: { npc_raider_chief: "uncertain ally", player: "ally" },
+  memory: ["Defended Greenfall", "Vision from old gods"],
+  status: { location: "greenfall_edge", faction: "Rangers of the Vale", mood: "cautious", current_task: "patrol" }
+};
+
+const sampleFaction = {
+  id: "f_raiders",
+  name: "Ash Dune Riders",
+  tags: ["raiders", "nomads"],
+  ideology: "Strength through freedom",
+  goals: ["control trade routes", "undermine town council"],
+  pressure: 0.42,
+  stability: 0.58,
+  resources: { food: 40, mounts: 25, weapons: 60 },
+  relations: { f_town: -35, f_rangers: -10 },
+  leaders: ["npc_raider_chief"]
+};
+
+const sampleWorld = {
+  time: "Day 12, 03:00",
+  weather: "rain",
+  locations: ["greenfall", "greenfall_edge", "old_road"],
+  factions: { f_raiders: sampleFaction },
+  events: ["raider_scout_spotted", "storm_warning"],
+  history_log: ["Day 11: merchant caravan robbed"],
+  tension: 0.47
+};
+
+const sampleArc = {
+  id: "arc_cult_rise",
+  title: "Whispers Beneath Greenfall",
+  stage: "rumors",
+  goal: "destabilize settlement from within",
+  progress: 0.22,
+  triggers: ["nightmares", "missing supplies"],
+  beats: ["first rumor", "suspicious sermon", "disappearance"],
+  pressure_vector: { f_town: 0.2, f_cult: 0.5 }
+};
+
+function download(filename: string, data: object) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function useJsonEditor<T>(initial: T, validate: (d: any) => boolean) {
+  const [raw, setRaw] = useState<string>(() => JSON.stringify(initial, null, 2));
+  const [parsed, setParsed] = useState<T>(initial);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const parse = (text: string) => {
+    setRaw(text);
+    try {
+      const obj = JSON.parse(text);
+      const ok = validate(obj);
+      if (!ok) {
+        const ajvErrors = (validate as any).errors || [];
+        setErrors(ajvErrors.map((e: any) => `${e.instancePath || "/"} ${e.message}`));
+      } else {
+        setErrors([]);
+        setParsed(obj);
+      }
+    } catch (e: any) {
+      setErrors([e.message]);
+    }
+  };
+
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    file.text().then((t) => parse(t));
+  };
+
+  return { raw, setRaw: parse, parsed, errors, uploadRef, onUpload };
+}
+
+function EditorPane({
+  label,
+  filename,
+  hook
+}: {
+  label: string;
+  filename: string;
+  hook: ReturnType<typeof useJsonEditor<any>>;
+}) {
+  const { raw, setRaw, parsed, errors, uploadRef, onUpload } = hook;
+
+  const isValid = errors.length === 0;
+  return (
+    <Card className="w-full">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          {isValid ? (
+            <span className="flex items-center gap-1 text-green-600 text-sm"><CheckCircle2 className="h-4 w-4"/> Valid</span>
+          ) : (
+            <span className="flex items-center gap-1 text-red-600 text-sm"><AlertCircle className="h-4 w-4"/> Invalid</span>
+          )}
+          <div className="ml-auto flex gap-2">
+            <input type="file" accept="application/json" className="hidden" ref={uploadRef} onChange={onUpload} />
+            <Button variant="secondary" onClick={() => uploadRef.current?.click()}><Upload className="h-4 w-4 mr-1"/>Import</Button>
+            <Button onClick={() => download(filename, parsed)}><Download className="h-4 w-4 mr-1"/>Export</Button>
+          </div>
+        </div>
+        <Textarea className="font-mono text-xs min-h-[320px]" value={raw} onChange={(e) => setRaw(e.target.value)} />
+        {!isValid && (
+          <div className="text-xs text-red-600">
+            {errors.map((e, i) => (
+              <div key={i}>• {e}</div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Entities CRUD Manager ---
+function EntitiesManager() {
+  const [entities, setEntities] = useState<any[]>([structuredClone(sampleEntity)]);
+  const [selected, setSelected] = useState(0);
+  const [query, setQuery] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [showRawJson, setShowRawJson] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+useEffect(() => {
+  (async () => {
+    try { const rows = await listEntities(); if (rows.length) { setEntities(rows as any[]); setSelected(0); } }
+    catch(e){ console.warn("Load entities failed", e); }
+  })();
+}, []);
+
+async function saveCurrent(){ try { await upsertEntity(entities[selected] as any); } catch(e){ console.error(e); } }
+async function saveAll(){ for (const e of entities){ try { await upsertEntity(e as any); } catch(err){ console.error(err); } } }
+async function removeCurrent(){
+  const id = entities[selected]?.id; if (!id) return;
+  try { await deleteEntity(id); } catch(e){ console.error(e); }
+  setEntities(prev => prev.filter((_,i)=>i!==selected)); setSelected(0);
+}
+
+  const current = entities[selected];
+  const filtered = entities.map((e, i) => ({ e, i })).filter(({ e }) => {
+    const hay = `${e.name} ${e.id} ${(e.tags || []).join(" ")}`.toLowerCase();
+    return hay.includes(query.toLowerCase());
+  });
+
+  const validateCurrent = () => {
+    const ok = validateEntity(current);
+    setErrors((validateEntity as any).errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || []);
+    return ok;
+  };
+
+  const update = (patch: any) => {
+    setEntities((prev) => {
+      const next = [...prev];
+      next[selected] = { ...next[selected], ...patch };
+      return next;
+    });
+  };
+
+  const updateNested = (path: string[], value: any) => {
+    setEntities((prev) => {
+      const next = [...prev];
+      const obj = { ...next[selected] } as any;
+      let cur = obj;
+      for (let i = 0; i < path.length - 1; i++) {
+        const k = path[i];
+        cur[k] = { ...(cur[k] || {}) };
+        cur = cur[k];
+      }
+      cur[path[path.length - 1]] = value;
+      next[selected] = obj;
+      return next;
+    });
+  };
+
+  const addNew = () => {
+    const id = `npc_${Math.random().toString(36).slice(2, 7)}`;
+    const base = structuredClone(sampleEntity);
+    base.id = id;
+    base.name = "New Entity";
+    setEntities((prev) => [...prev, base]);
+    setSelected(entities.length);
+  };
+
+  const duplicate = () => {
+    const clone = structuredClone(current);
+    clone.id = `${clone.id}_copy`;
+    setEntities((p) => [...p, clone]);
+    setSelected(entities.length);
+  };
+
+  const remove = async () => {
+    if (!entities.length) return;
+    await removeCurrent();
+  };
+
+  const downloadCollection = () => download("entities.json", entities);
+
+  const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    file.text().then((t) => {
+      try {
+        const obj = JSON.parse(t);
+        if (Array.isArray(obj)) setEntities(obj);
+        else if (obj && typeof obj === "object") setEntities((p) => [...p, obj]);
+      } catch {}
+    });
+  };
+
+  const tagString = (current?.tags || []).join(", ");
+
+  return (
+    <div className="flex gap-4">
+      {/* Sidebar list */}
+      <div className="w-80">
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex gap-2 items-center">
+              <Button onClick={addNew}><PlusCircle className="h-4 w-4 mr-1"/>New</Button>
+              <Button variant="secondary" onClick={duplicate}>Duplicate</Button>
+              <Button variant="secondary" onClick={remove}><Trash2 className="h-4 w-4 mr-1"/>Delete</Button>
+            </div>
+            <div>
+              <input className="w-full rounded-md bg-slate-950/60 border border-slate-800 px-2 py-1 text-sm" placeholder="Search by name, id, tag..." value={query} onChange={(e)=>setQuery(e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <input type="file" accept="application/json" className="hidden" ref={fileRef} onChange={onImport} />
+              <Button variant="secondary" onClick={() => fileRef.current?.click()}><Upload className="h-4 w-4 mr-1"/>Import</Button>
+              <Button onClick={downloadCollection}><Download className="h-4 w-4 mr-1"/>Export</Button>
+            </div>
+            <div className="grid gap-2 max-h-[420px] overflow-auto">
+              {filtered.map(({ e, i }) => (
+                <div key={i} onClick={() => setSelected(i)} className={`p-2 rounded-lg border cursor-pointer transition ${i===selected ? 'border-indigo-500/70 bg-indigo-500/10 ring-1 ring-indigo-500/30' : 'border-slate-800 hover:bg-slate-800/40'}`}>
+                  <div className="text-sm font-medium">{e.name || e.id}</div>
+                  <div className="text-xs opacity-70">{e.id}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detail editor */}
+      <div style={{ flex: 1 }}>
+        {current ? (
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                {errors.length === 0 ? (
+                  <span className="flex items-center gap-1 text-green-600 text-sm"><CheckCircle2 className="h-4 w-4"/> Valid</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-red-600 text-sm"><AlertCircle className="h-4 w-4"/> Invalid</span>
+                )}
+                <div className="ml-auto flex gap-2">
+                  <Button variant="secondary" onClick={validateCurrent}>Validate</Button>
+                  <Button variant="secondary" onClick={saveCurrent}>Save Current</Button>
+                  <Button variant="secondary" onClick={saveAll}>Save All</Button>
+                  <Button variant="secondary" onClick={()=>download(current.id + '.json', current)}>Download</Button>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <label className="text-xs opacity-80">ID<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.id} onChange={(e)=>update({id:e.target.value})} /></label>
+                <label className="text-xs opacity-80">Name<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.name} onChange={(e)=>update({name:e.target.value})} /></label>
+                <label className="col-span-2 text-xs opacity-80">Tags (comma-separated)
+                  <input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={tagString} onChange={(e)=>update({tags:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)})} />
+                </label>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 8 }}>
+                <label className="text-xs opacity-80">STR<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.str} onChange={(e)=>updateNested(['srd','stats','str'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">DEX<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.dex} onChange={(e)=>updateNested(['srd','stats','dex'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">CON<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.con} onChange={(e)=>updateNested(['srd','stats','con'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">INT<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.int} onChange={(e)=>updateNested(['srd','stats','int'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">WIS<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.wis} onChange={(e)=>updateNested(['srd','stats','wis'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">CHA<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.stats.cha} onChange={(e)=>updateNested(['srd','stats','cha'], Number(e.target.value))}/></label>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+                <label className="text-xs opacity-80">HP<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.hp} onChange={(e)=>updateNested(['srd','hp'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">AC<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" type="number" value={current.srd.ac} onChange={(e)=>updateNested(['srd','ac'], Number(e.target.value))}/></label>
+                <label className="text-xs opacity-80">Faction<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" value={current.status.faction} onChange={(e)=>updateNested(['status','faction'], e.target.value)}/></label>
+                <label className="text-xs opacity-80">Location<input className="w-full p-1 rounded bg-slate-900 border border-slate-700" value={current.status.location} onChange={(e)=>updateNested(['status','location'], e.target.value)}/></label>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <label className="text-xs opacity-80">Temperament<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.personality.temperament || ''} onChange={(e)=>updateNested(['personality','temperament'], e.target.value)}/></label>
+                <label className="text-xs opacity-80">Mood<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.status.mood || ''} onChange={(e)=>updateNested(['status','mood'], e.target.value)}/></label>
+                <label className="col-span-2 text-xs opacity-80">Ideals (comma-separated)
+                  <input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={(current.personality.ideals||[]).join(', ')} onChange={(e)=>updateNested(['personality','ideals'], e.target.value.split(',').map(s=>s.trim()).filter(Boolean))}/>
+                </label>
+              </div>
+
+              <div>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowRawJson(!showRawJson)}
+                  className="w-full justify-between"
+                >
+                  <span className="text-xs opacity-80">Advanced (Raw JSON)</span>
+                  {showRawJson ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                {showRawJson && (
+                  <Textarea 
+                    className="font-mono text-xs min-h-[160px] mt-2" 
+                    value={JSON.stringify(current, null, 2)} 
+                    onChange={(e)=>{
+                      try{ const obj = JSON.parse(e.target.value); setEntities(prev=>{ const n=[...prev]; n[selected]=obj; return n;}); setErrors([]);}catch(err:any){ setErrors([err.message]); }
+                    }} 
+                  />
+                )}
+              </div>
+
+              {errors.length>0 && (
+                <div className="text-xs text-red-500">{errors.map((e,i)=>(<div key={i}>• {e}</div>))}</div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="opacity-70 text-sm">No entity selected.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Factions CRUD Manager ---
+function FactionsManager() {
+  const [factions, setFactions] = useState<any[]>([structuredClone(sampleFaction)]);
+  const [selected, setSelected] = useState(0);
+  const [query, setQuery] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [showRawJsonFactions, setShowRawJsonFactions] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+useEffect(()=>{(async()=>{
+  try{ const rows=await listFactions(); if(rows.length){ setFactions(rows as any[]); setSelected(0);} }
+  catch(e){ console.warn("Load factions failed", e); }
+})();},[]);
+
+async function saveCurrent(){ try{ await upsertFaction(factions[selected] as any);}catch(e){console.error(e);} }
+async function saveAll(){ for(const f of factions){ try{ await upsertFaction(f as any);}catch(e){console.error(e);} } }
+async function removeCurrent(){ const id=factions[selected]?.id; if(!id) return;
+  try{ await deleteFaction(id);}catch(e){console.error(e);}
+  setFactions(prev=>prev.filter((_,i)=>i!==selected)); setSelected(0);
+}
+
+  const current = factions[selected];
+  const filtered = factions.map((f, i) => ({ f, i })).filter(({ f }) => {
+    const hay = `${f.name} ${f.id} ${(f.tags || []).join(" ")}`.toLowerCase();
+    return hay.includes(query.toLowerCase());
+  });
+
+  const validateCurrent = () => {
+    const ok = validateFaction(current);
+    setErrors((validateFaction as any).errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || []);
+    return ok;
+  };
+
+  const update = (patch: any) => {
+    setFactions((prev) => {
+      const next = [...prev];
+      next[selected] = { ...next[selected], ...patch };
+      return next;
+    });
+  };
+
+  const addNew = () => {
+    const id = `f_${Math.random().toString(36).slice(2, 7)}`;
+    const base = structuredClone(sampleFaction);
+    base.id = id;
+    base.name = "New Faction";
+    setFactions((prev) => [...prev, base]);
+    setSelected(factions.length);
+  };
+
+  const duplicate = () => {
+    const clone = structuredClone(current);
+    clone.id = `${clone.id}_copy`;
+    setFactions((p) => [...p, clone]);
+    setSelected(factions.length);
+  };
+
+  const remove = async () => {
+    if (!factions.length) return;
+    await removeCurrent();
+  };
+
+  const downloadCollection = () => download("factions.json", factions);
+
+  const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    file.text().then((t) => {
+      try {
+        const obj = JSON.parse(t);
+        if (Array.isArray(obj)) setFactions(obj);
+        else if (obj && typeof obj === "object") setFactions((p) => [...p, obj]);
+      } catch {}
+    });
+  };
+
+  const tagString = (current?.tags || []).join(", ");
+
+  return (
+    <div className="flex gap-4">
+      <div className="w-80">
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex gap-2 items-center">
+              <Button onClick={addNew}><PlusCircle className="h-4 w-4 mr-1"/>New</Button>
+              <Button variant="secondary" onClick={duplicate}>Duplicate</Button>
+              <Button variant="secondary" onClick={remove}><Trash2 className="h-4 w-4 mr-1"/>Delete</Button>
+            </div>
+            <div>
+              <input className="w-full rounded-md bg-slate-950/60 border border-slate-800 px-2 py-1 text-sm" placeholder="Search by name, id, tag..." value={query} onChange={(e)=>setQuery(e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <input type="file" accept="application/json" className="hidden" ref={fileRef} onChange={onImport} />
+              <Button variant="secondary" onClick={() => fileRef.current?.click()}><Upload className="h-4 w-4 mr-1"/>Import</Button>
+              <Button onClick={downloadCollection}><Download className="h-4 w-4 mr-1"/>Export</Button>
+            </div>
+            <div className="grid gap-2 max-h-[420px] overflow-auto">
+              {filtered.map(({ f, i }) => (
+                <div key={i} onClick={() => setSelected(i)} className={`p-2 rounded-lg border cursor-pointer transition ${i===selected ? 'border-indigo-500/70 bg-indigo-500/10 ring-1 ring-indigo-500/30' : 'border-slate-800 hover:bg-slate-800/40'}`}>
+                  <div className="text-sm font-medium">{f.name || f.id}</div>
+                  <div className="text-xs opacity-70">{f.id}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div style={{ flex: 1 }}>
+        {current ? (
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                {errors.length === 0 ? (
+                  <span className="flex items-center gap-1 text-green-600 text-sm"><CheckCircle2 className="h-4 w-4"/> Valid</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-red-600 text-sm"><AlertCircle className="h-4 w-4"/> Invalid</span>
+                )}
+                <div className="ml-auto flex gap-2">
+                  <Button variant="secondary" onClick={validateCurrent}>Validate</Button>
+                  <Button variant="secondary" onClick={saveCurrent}>Save Current</Button>
+                  <Button variant="secondary" onClick={saveAll}>Save All</Button>
+                  <Button variant="secondary" onClick={()=>download(current.id + '.json', current)}>Download</Button>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <label className="text-xs opacity-80">ID<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.id} onChange={(e)=>update({id:e.target.value})} /></label>
+                <label className="text-xs opacity-80">Name<input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={current.name} onChange={(e)=>update({name:e.target.value})} /></label>
+                <label className="col-span-2 text-xs opacity-80">Tags (comma-separated)
+                  <input className="w-full p-2 rounded bg-slate-900 border border-slate-700" value={tagString} onChange={(e)=>update({tags:e.target.value.split(',').map(s=>s.trim()).filter(Boolean)})} />
+                </label>
+              </div>
+
+              <div>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowRawJsonFactions(!showRawJsonFactions)}
+                  className="w-full justify-between"
+                >
+                  <span className="text-xs opacity-80">Advanced (Raw JSON)</span>
+                  {showRawJsonFactions ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                {showRawJsonFactions && (
+                  <Textarea 
+                    className="font-mono text-xs min-h-[320px] mt-2" 
+                    value={JSON.stringify(current, null, 2)} 
+                    onChange={(e)=>{
+                      try{ const obj = JSON.parse(e.target.value); setFactions(prev=>{ const n=[...prev]; n[selected]=obj; return n;}); setErrors([]);}catch(err:any){ setErrors([err.message]); }
+                    }} 
+                  />
+                )}
+              </div>
+
+              {errors.length>0 && (
+                <div className="text-xs text-red-500">{errors.map((e,i)=>(<div key={i}>• {e}</div>))}</div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="opacity-70 text-sm">No faction selected.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Arcs CRUD Manager ---
+function ArcsManager() {
+  const [arcs, setArcs] = useState<any[]>([structuredClone(sampleArc)]);
+  const [selected, setSelected] = useState(0);
+  const [query, setQuery] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [showRawJson, setShowRawJson] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+useEffect(()=>{(async()=>{
+  try{ const rows=await listArcs(); if(rows.length){ setArcs(rows as any[]); setSelected(0);} }
+  catch(e){ console.warn("Load arcs failed", e); }
+})();},[]);
+async function saveCurrent(){ try{ await upsertArc(arcs[selected] as any);}catch(e){console.error(e);} }
+async function saveAll(){ for(const a of arcs){ try{ await upsertArc(a as any);}catch(e){console.error(e);} } }
+async function removeCurrent(){ const id=arcs[selected]?.id; if(!id) return;
+  try{ await deleteArc(id);}catch(e){console.error(e);}
+  setArcs(prev=>prev.filter((_,i)=>i!==selected)); setSelected(0);
+}
+
+  const updateArc = (patch: any) => {
+    setArcs((prev) => {
+      const next = [...prev];
+      next[selected] = { ...next[selected], ...patch };
+      return next;
+    });
+  };
+
+  const updateNestedArc = (path: string[], value: any) => {
+    setArcs((prev) => {
+      const next = [...prev];
+      const obj = { ...next[selected] } as any;
+      let cur = obj;
+      for (let i = 0; i < path.length - 1; i++) {
+        const k = path[i];
+        cur[k] = { ...(cur[k] || {}) };
+        cur = cur[k];
+      }
+      cur[path[path.length - 1]] = value;
+      next[selected] = obj;
+      return next;
+    });
+  };
+
+  const current = arcs[selected];
+  const filtered = arcs.map((a, i) => ({ a, i })).filter(({ a }) => {
+    const hay = `${a.title} ${a.id} ${a.stage}`.toLowerCase();
+    return hay.includes(query.toLowerCase());
+  });
+
+  const validateCurrent = () => {
+    const ok = validateArc(current);
+    setErrors((validateArc as any).errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || []);
+    return ok;
+  };
+
+  const update = (patch: any) => {
+    setArcs((prev) => {
+      const next = [...prev];
+      next[selected] = { ...next[selected], ...patch };
+      return next;
+    });
+  };
+
+  const addNew = () => {
+    const id = `arc_${Math.random().toString(36).slice(2, 7)}`;
+    const base = structuredClone(sampleArc);
+    base.id = id;
+    base.title = "New Arc";
+    setArcs((prev) => [...prev, base]);
+    setSelected(arcs.length);
+  };
+
+  const duplicate = () => {
+    const clone = structuredClone(current);
+    clone.id = `${clone.id}_copy`;
+    setArcs((p) => [...p, clone]);
+    setSelected(arcs.length);
+  };
+
+  const remove = async () => {
+    if (!arcs.length) return;
+    await removeCurrent();
+  };
+
+  const downloadCollection = () => download("arcs.json", arcs);
+
+  const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    file.text().then((t) => {
+      try {
+        const obj = JSON.parse(t);
+        if (Array.isArray(obj)) setArcs(obj);
+        else if (obj && typeof obj === "object") setArcs((p) => [...p, obj]);
+      } catch {}
+    });
+  };
+
+  return (
+    <div className="flex gap-4">
+      <div className="w-80">
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex gap-2 items-center">
+              <Button onClick={addNew}><PlusCircle className="h-4 w-4 mr-1"/>New</Button>
+              <Button variant="secondary" onClick={duplicate}>Duplicate</Button>
+              <Button variant="secondary" onClick={remove}><Trash2 className="h-4 w-4 mr-1"/>Delete</Button>
+            </div>
+            <div>
+              <input className="w-full rounded-md bg-slate-950/60 border border-slate-800 px-2 py-1 text-sm" placeholder="Search by title, id, stage..." value={query} onChange={(e)=>setQuery(e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <input type="file" accept="application/json" className="hidden" ref={fileRef} onChange={onImport} />
+              <Button variant="secondary" onClick={() => fileRef.current?.click()}><Upload className="h-4 w-4 mr-1"/>Import</Button>
+              <Button onClick={downloadCollection}><Download className="h-4 w-4 mr-1"/>Export</Button>
+            </div>
+            <div className="grid gap-2 max-h-[420px] overflow-auto">
+              {filtered.map(({ a, i }) => (
+                <div key={i} onClick={() => setSelected(i)} className={`p-2 rounded-lg border cursor-pointer transition ${i===selected ? 'border-indigo-500/70 bg-indigo-500/10 ring-1 ring-indigo-500/30' : 'border-slate-800 hover:bg-slate-800/40'}`}>
+                  <div className="text-sm font-medium">{a.title || a.id}</div>
+                  <div className="text-xs opacity-70">{a.stage} • {a.id}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div style={{ flex: 1 }}>
+        {current ? (
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                {errors.length === 0 ? (
+                  <span className="flex items-center gap-1 text-green-600 text-sm"><CheckCircle2 className="h-4 w-4"/> Valid</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-red-600 text-sm"><AlertCircle className="h-4 w-4"/> Invalid</span>
+                )}
+                <div className="ml-auto flex gap-2">
+                  <Button variant="secondary" onClick={validateCurrent}>Validate</Button>
+                  <Button variant="secondary" onClick={saveCurrent}>Save Current</Button>
+                  <Button variant="secondary" onClick={saveAll}>Save All</Button>
+                  <Button variant="secondary" onClick={()=>download(current.id + '.json', current)}>Download</Button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="text-xs opacity-80">
+                    ID
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={current.id || ''} 
+                      onChange={(e) => updateArc({id: e.target.value})} 
+                    />
+                  </label>
+                  <label className="text-xs opacity-80">
+                    Title
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={current.title || ''} 
+                      onChange={(e) => updateArc({title: e.target.value})} 
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <label className="text-xs opacity-80">
+                    Stage
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={current.stage || ''} 
+                      onChange={(e) => updateArc({stage: e.target.value})} 
+                    />
+                  </label>
+                  <label className="text-xs opacity-80">
+                    Owner
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={current.owner || ''} 
+                      onChange={(e) => updateArc({owner: e.target.value})} 
+                    />
+                  </label>
+                  <label className="text-xs opacity-80">
+                    Progress
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      type="number" 
+                      min="0" 
+                      max="1" 
+                      step="0.01"
+                      value={current.progress || 0} 
+                      onChange={(e) => updateArc({progress: parseFloat(e.target.value) || 0})} 
+                    />
+                  </label>
+                </div>
+
+                <label className="text-xs opacity-80">
+                  Goal
+                  <textarea 
+                    className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                    rows={2}
+                    value={current.goal || ''} 
+                    onChange={(e) => updateArc({goal: e.target.value})} 
+                  />
+                </label>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="text-xs opacity-80">
+                    Triggers (comma-separated)
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={(current.triggers || []).join(', ')} 
+                      onChange={(e) => updateArc({triggers: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})} 
+                    />
+                  </label>
+                  <label className="text-xs opacity-80">
+                    Beats (comma-separated)
+                    <input 
+                      className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                      value={(current.beats || []).join(', ')} 
+                      onChange={(e) => updateArc({beats: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})} 
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowRawJson(!showRawJson)}
+                  className="w-full justify-between"
+                >
+                  <span className="text-xs opacity-80">Advanced (Raw JSON)</span>
+                  {showRawJson ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                {showRawJson && (
+                  <Textarea 
+                    className="font-mono text-xs min-h-[320px] mt-2" 
+                    value={JSON.stringify(current, null, 2)} 
+                    onChange={(e)=>{
+                      try{ const obj = JSON.parse(e.target.value); setArcs(prev=>{ const n=[...prev]; n[selected]=obj; return n;}); setErrors([]);}catch(err:any){ setErrors([err.message]); }
+                    }} 
+                  />
+                )}
+              </div>
+
+              {errors.length>0 && (
+                <div className="text-xs text-red-500">{errors.map((e,i)=>(<div key={i}>• {e}</div>))}</div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="opacity-70 text-sm">No arc selected.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Worlds Manager ---
+function WorldsManager() {
+  const [worldDoc, setWorldDoc] = useState<any>(structuredClone(sampleWorld));
+  const [errors, setErrors] = useState<string[]>([]);
+  const [showRawJson, setShowRawJson] = useState(false);
+
+useEffect(()=>{(async()=>{
+  try{ const rows = await listWorlds(); if(rows.length) setWorldDoc(rows[0] as any); }
+  catch(e){ console.warn("Load worlds failed", e); }
+})();},[]);
+async function saveWorld(){ try{ await upsertWorld(worldDoc); }catch(e){ console.error(e);} }
+
+  const updateWorld = (patch: any) => {
+    setWorldDoc((prev: any) => ({ ...prev, ...patch }));
+  };
+
+  const validateCurrent = () => {
+    const ok = validateWorld(worldDoc);
+    setErrors((validateWorld as any).errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || []);
+    return ok;
+  };
+
+  return (
+    <Card className="w-full">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          {errors.length === 0 ? (
+            <span className="flex items-center gap-1 text-green-600 text-sm"><CheckCircle2 className="h-4 w-4"/> Valid</span>
+          ) : (
+            <span className="flex items-center gap-1 text-red-600 text-sm"><AlertCircle className="h-4 w-4"/> Invalid</span>
+          )}
+          <div className="ml-auto flex gap-2">
+            <Button variant="secondary" onClick={validateCurrent}>Validate</Button>
+            <Button variant="secondary" onClick={saveWorld}>Save World</Button>
+            <Button variant="secondary" onClick={() => download('world.json', worldDoc)}>Download</Button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <label className="text-xs opacity-80">
+              Time
+              <input 
+                className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                value={worldDoc.time || ''} 
+                onChange={(e) => updateWorld({time: e.target.value})} 
+              />
+            </label>
+            <label className="text-xs opacity-80">
+              Weather
+              <input 
+                className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                value={worldDoc.weather || ''} 
+                onChange={(e) => updateWorld({weather: e.target.value})} 
+              />
+            </label>
+            <label className="text-xs opacity-80">
+              Tension
+              <input 
+                className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                type="number" 
+                min="0" 
+                max="1" 
+                step="0.01"
+                value={worldDoc.tension || 0} 
+                onChange={(e) => updateWorld({tension: parseFloat(e.target.value) || 0})} 
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="text-xs opacity-80">
+              Locations (comma-separated)
+              <input 
+                className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                value={(worldDoc.locations || []).join(', ')} 
+                onChange={(e) => updateWorld({locations: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})} 
+              />
+            </label>
+            <label className="text-xs opacity-80">
+              Events (comma-separated)
+              <input 
+                className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+                value={(worldDoc.events || []).join(', ')} 
+                onChange={(e) => updateWorld({events: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})} 
+              />
+            </label>
+          </div>
+
+          <label className="text-xs opacity-80">
+            History Log (comma-separated)
+            <textarea 
+              className="w-full p-2 rounded bg-slate-900 border border-slate-700 mt-1" 
+              rows={3}
+              value={(worldDoc.history_log || []).join(', ')} 
+              onChange={(e) => updateWorld({history_log: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})} 
+            />
+          </label>
+        </div>
+
+        <div>
+          <Button 
+            variant="secondary" 
+            onClick={() => setShowRawJson(!showRawJson)}
+            className="w-full justify-between"
+          >
+            <span className="text-xs opacity-80">Advanced (Raw JSON)</span>
+            {showRawJson ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+          {showRawJson && (
+            <Textarea 
+              className="font-mono text-xs min-h-[320px] mt-2" 
+              value={JSON.stringify(worldDoc, null, 2)} 
+              onChange={(e) => {
+                try {
+                  const obj = JSON.parse(e.target.value);
+                  setWorldDoc(obj);
+                  setErrors([]);
+                } catch (err: any) {
+                  setErrors([err.message]);
+                }
+              }} 
+            />
+          )}
+        </div>
+        {errors.length > 0 && (
+          <div className="text-xs text-red-600">
+            {errors.map((e, i) => (
+              <div key={i}>• {e}</div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function EngineEditor() {
+  return (
+    <div className="p-6 space-y-4">
+      <Tabs defaultValue="entity" className="w-full">
+        <TabsList className="grid grid-cols-4 w-full">
+          <TabsTrigger value="entity">Entity</TabsTrigger>
+          <TabsTrigger value="faction">Faction</TabsTrigger>
+          <TabsTrigger value="world">World</TabsTrigger>
+          <TabsTrigger value="arc">Arc</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="entity"><EntitiesManager /></TabsContent>
+        <TabsContent value="faction"><FactionsManager /></TabsContent>
+        <TabsContent value="world"><WorldsManager /></TabsContent>
+        <TabsContent value="arc"><ArcsManager /></TabsContent>
+      </Tabs>
+
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-sm opacity-80">
+        Pro tip: keep SRD mechanics in <em>srd</em>, personality/traits in <em>personality</em>, and world pressure in <em>pressure/stability</em>. This editor validates shape only; game logic stays in Rails/Overseer.
+      </motion.div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/ui/button.tsx">
+import React from 'react'
+
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' }
+
+export const Button: React.FC<Props> = ({ variant='primary', style, ...props }) => {
+  const base: React.CSSProperties = {
+    background: variant === 'primary' ? 'var(--accent)' : 'transparent',
+    color: variant === 'primary' ? 'white' : 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 12px',
+    borderRadius: 10,
+    cursor: 'pointer'
+  }
+  return <button {...props} style={{ ...base, ...style }} />
+}
+</file>
+
+<file path="src/components/ui/card.tsx">
+import React from 'react'
+
+export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = {
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
+    borderRadius: 12,
+  }
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>
+}
+
+export const CardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = {
+    padding: 16
+  }
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>
+}
+</file>
+
+<file path="src/components/ui/input.tsx">
+import React from 'react'
+
+export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => {
+  const style: React.CSSProperties = {
+    background: 'var(--card)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 10px',
+    borderRadius: 8
+  }
+  return <input {...props} style={{ ...style, ...(props.style||{}) }} />
+}
+</file>
+
+<file path="src/components/ui/tabs.tsx">
+import React from 'react'
+
+type TabsProps = { defaultValue: string, children: React.ReactNode, className?: string }
+type TabsContext = { value: string, setValue: (v: string) => void }
+const Ctx = React.createContext<TabsContext | null>(null)
+
+export const Tabs: React.FC<TabsProps> = ({ defaultValue, children }) => {
+  const [value, setValue] = React.useState(defaultValue)
+  return <Ctx.Provider value={{ value, setValue }}>{children}</Ctx.Provider>
+}
+
+export const TabsList: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = { display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap: 8, marginBottom: 12 }
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>
+}
+
+export const TabsTrigger: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }> = ({ value, children }) => {
+  const ctx = React.useContext(Ctx)!
+  const active = ctx.value === value
+  return <button onClick={() => ctx.setValue(value)} style={{ padding:'8px 10px', borderRadius:8, border:'1px solid var(--border)', background: active ? 'var(--accent)' : 'transparent', color: active ? 'white' : 'var(--text)', cursor:'pointer' }}>{children}</button>
+}
+
+export const TabsContent: React.FC<{ value: string, children: React.ReactNode }> = ({ value, children }) => {
+  const ctx = React.useContext(Ctx)!
+  if (ctx.value !== value) return null
+  return <div>{children}</div>
+}
+</file>
+
+<file path="src/components/ui/textarea.tsx">
+import React from 'react'
+
+export const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => {
+  const style: React.CSSProperties = {
+    background: 'var(--card)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 10px',
+    borderRadius: 8,
+    minHeight: 320,
+    width: '100%'
+  }
+  return <textarea {...props} style={{ ...style, ...(props.style||{}) }} />
+}
+</file>
+
+<file path="src/index.css">
+/* src/index.css */
+@import "tailwindcss";
+</file>
+
+<file path="src/lib/arcs.ts">
+import { supabase } from "./supabase";
+export type ArcRow = {
+  id:string; title:string; stage?:string; goal?:string;
+  progress:number; triggers:string[]; beats:string[]; pressure_vector:any; owner?:string;
+};
+export async function listArcs(): Promise<ArcRow[]> {
+  const { data, error } = await supabase.from("arcs").select("*").order("title",{ascending:true});
+  if (error) throw error; return data ?? [];
+}
+export async function upsertArc(row: ArcRow): Promise<ArcRow> {
+  const { data, error } = await supabase.from("arcs").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error; return data!;
+}
+export async function deleteArc(id:string){ const { error } = await supabase.from("arcs").delete().eq("id",id); if (error) throw error; }
+</file>
+
+<file path="src/lib/entities.ts">
+import { supabase } from "./supabase";
+export type EntityRow = {
+  id: string; name: string; tags: string[];
+  srd: any; personality: any; status: any; relationships: any;
+};
+export async function listEntities(): Promise<EntityRow[]> {
+  const { data, error } = await supabase.from("entities").select("*").order("name",{ascending:true});
+  if (error) throw error; return data ?? [];
+}
+export async function upsertEntity(row: EntityRow): Promise<EntityRow> {
+  const { data, error } = await supabase.from("entities").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error; return data!;
+}
+export async function deleteEntity(id: string) {
+  const { error } = await supabase.from("entities").delete().eq("id", id);
+  if (error) throw error;
+}
+</file>
+
+<file path="src/lib/events.ts">
+import { supabase } from "./supabase";
+export type EventRow = {
+  id: string; world_id: string; type: string; title?: string;
+  payload: any; priority: number; source?: string;
+  tags: string[]; expires_at?: string; created_at: string;
+};
+
+export async function listEvents(world_id: string): Promise<EventRow[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("world_id", world_id)
+    .order("created_at", { ascending: false });
+  if (error) throw error; return data ?? [];
+}
+
+export async function insertEvent(row: Omit<EventRow, "id"|"created_at">) {
+  const { data, error } = await supabase.from("events").insert(row).select().single();
+  if (error) throw error; return data!;
+}
+</file>
+
+<file path="src/lib/factions.ts">
+import { supabase } from "./supabase";
+export type FactionRow = {
+  id:string; name:string; tags:string[]; ideology?:string;
+  goals:string[]; pressure:number; stability:number;
+  resources:any; relations:any; leaders?:string[];
+};
+export async function listFactions(): Promise<FactionRow[]> {
+  const { data, error } = await supabase.from("factions").select("*").order("name",{ascending:true});
+  if (error) throw error; return data ?? [];
+}
+export async function upsertFaction(row: FactionRow): Promise<FactionRow> {
+  const { data, error } = await supabase.from("factions").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error; return data!;
+}
+export async function deleteFaction(id:string){ const { error } = await supabase.from("factions").delete().eq("id",id); if (error) throw error; }
+</file>
+
+<file path="src/lib/supabase.ts">
+import { createClient } from "@supabase/supabase-js";
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
+</file>
+
+<file path="src/lib/worlds.ts">
+import { supabase } from "./supabase";
+export type WorldRow = {
+  id:string; time?:string; weather?:string; locations:string[];
+  factions:any; events:any[]; history_log:string[]; tension:number;
+};
+export async function listWorlds(): Promise<WorldRow[]> {
+  const { data, error } = await supabase.from("worlds").select("*").order("created_at",{ascending:false});
+  if (error) throw error; return data ?? [];
+}
+export async function upsertWorld(row: Partial<WorldRow> & { id?:string }) {
+  const { data, error } = await supabase.from("worlds").upsert(row).select().maybeSingle();
+  if (error) throw error; return data;
+}
+export async function deleteWorld(id:string){ const { error } = await supabase.from("worlds").delete().eq("id",id); if (error) throw error; }
+</file>
+
+<file path="src/main.tsx">
+import "./index.css";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+
+
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+</file>
+
+<file path="src/schemas/json-schema-2020-12.json">
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://json-schema.org/draft/2020-12/schema",
+    "$vocabulary": {
+        "https://json-schema.org/draft/2020-12/vocab/core": true,
+        "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+        "https://json-schema.org/draft/2020-12/vocab/unevaluated": true,
+        "https://json-schema.org/draft/2020-12/vocab/validation": true,
+        "https://json-schema.org/draft/2020-12/vocab/meta-data": true,
+        "https://json-schema.org/draft/2020-12/vocab/format-annotation": true,
+        "https://json-schema.org/draft/2020-12/vocab/content": true
+    },
+    "$dynamicAnchor": "meta",
+
+    "title": "Core and Validation specifications meta-schema",
+    "allOf": [
+        {"$ref": "meta/core"},
+        {"$ref": "meta/applicator"},
+        {"$ref": "meta/unevaluated"},
+        {"$ref": "meta/validation"},
+        {"$ref": "meta/meta-data"},
+        {"$ref": "meta/format-annotation"},
+        {"$ref": "meta/content"}
+    ],
+    "type": ["object", "boolean"],
+    "$comment": "This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.",
+    "properties": {
+        "definitions": {
+            "$comment": "\"definitions\" has been replaced by \"$defs\".",
+            "type": "object",
+            "additionalProperties": { "$dynamicRef": "#meta" },
+            "deprecated": true,
+            "default": {}
+        },
+        "dependencies": {
+            "$comment": "\"dependencies\" has been split and replaced by \"dependentSchemas\" and \"dependentRequired\" in order to serve their differing semantics.",
+            "type": "object",
+            "additionalProperties": {
+                "anyOf": [
+                    { "$dynamicRef": "#meta" },
+                    { "$ref": "meta/validation#/$defs/stringArray" }
+                ]
+            },
+            "deprecated": true,
+            "default": {}
+        },
+        "$recursiveAnchor": {
+            "$comment": "\"$recursiveAnchor\" has been replaced by \"$dynamicAnchor\".",
+            "$ref": "meta/core#/$defs/anchorString",
+            "deprecated": true
+        },
+        "$recursiveRef": {
+            "$comment": "\"$recursiveRef\" has been replaced by \"$dynamicRef\".",
+            "$ref": "meta/core#/$defs/uriReferenceString",
+            "deprecated": true
+        }
+    }
+}
+</file>
+
+<file path="src/vite-env.d.ts">
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string
+  readonly VITE_SUPABASE_ANON_KEY: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+</file>
+
+<file path="tailwind.config.js">
+// tailwind.config.js
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
+</file>
+
+<file path="tsconfig.tsbuildinfo">
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/engineeditor.tsx","./src/components/ui/button.tsx","./src/components/ui/card.tsx","./src/components/ui/input.tsx","./src/components/ui/tabs.tsx","./src/components/ui/textarea.tsx","./src/lib/arcs.ts","./src/lib/entities.ts","./src/lib/events.ts","./src/lib/factions.ts","./src/lib/supabase.ts","./src/lib/worlds.ts"],"version":"5.9.2"}
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 5173 },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
+</file>
+
+</files>

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/gameevent.json",
+  "title": "GameEvent",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "title",
+    "payload",
+    "priority"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "spawn",
+        "dialogue",
+        "modify",
+        "rumor",
+        "quest",
+        "environment"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

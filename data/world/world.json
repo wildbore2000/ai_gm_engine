@@ -1,0 +1,46 @@
+{
+  "time": "Day 12, 03:00",
+  "weather": "rain",
+  "locations": [
+    "greenfall",
+    "greenfall_edge",
+    "old_road"
+  ],
+  "factions": {
+    "f_raiders": {
+      "id": "f_raiders",
+      "name": "Ash Dune Riders",
+      "tags": [
+        "raiders",
+        "nomads"
+      ],
+      "ideology": "Strength through freedom",
+      "goals": [
+        "control trade routes",
+        "undermine town council"
+      ],
+      "pressure": 0.42,
+      "stability": 0.58,
+      "resources": {
+        "food": 40,
+        "mounts": 25,
+        "weapons": 60
+      },
+      "relations": {
+        "f_town": -35,
+        "f_rangers": -10
+      },
+      "leaders": [
+        "npc_raider_chief"
+      ]
+    }
+  },
+  "events": [
+    "raider_scout_spotted",
+    "storm_warning"
+  ],
+  "history_log": [
+    "Day 11: merchant caravan robbed"
+  ],
+  "tension": 0.47
+}

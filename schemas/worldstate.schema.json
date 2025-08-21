@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/worldstate.json",
+  "title": "WorldState",
+  "type": "object",
+  "required": [
+    "time",
+    "weather",
+    "locations",
+    "factions",
+    "events",
+    "history_log"
+  ],
+  "properties": {
+    "time": {
+      "type": "string"
+    },
+    "weather": {
+      "type": "string"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "factions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "schema/faction.json"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "history_log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tension": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}

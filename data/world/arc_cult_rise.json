@@ -1,0 +1,20 @@
+{
+  "id": "arc_cult_rise",
+  "title": "Whispers Beneath Greenfall",
+  "stage": "rumors",
+  "goal": "destabilize settlement from within",
+  "progress": 0.22,
+  "triggers": [
+    "nightmares",
+    "missing supplies"
+  ],
+  "beats": [
+    "first rumor",
+    "suspicious sermon",
+    "disappearance"
+  ],
+  "pressure_vector": {
+    "f_town": 0.2,
+    "f_cult": 0.5
+  }
+}

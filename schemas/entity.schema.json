@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/entity.json",
+  "title": "Entity",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "tags",
+    "srd",
+    "personality",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "srd": {
+      "type": "object",
+      "required": [
+        "level",
+        "ancestry",
+        "role",
+        "stats",
+        "hp",
+        "ac"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer"
+        },
+        "ancestry": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "alignment": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "required": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha"
+          ],
+          "properties": {
+            "str": {
+              "type": "integer"
+            },
+            "dex": {
+              "type": "integer"
+            },
+            "con": {
+              "type": "integer"
+            },
+            "int": {
+              "type": "integer"
+            },
+            "wis": {
+              "type": "integer"
+            },
+            "cha": {
+              "type": "integer"
+            }
+          }
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "ac": {
+          "type": "integer"
+        },
+        "saves": {
+          "type": "object",
+          "properties": {
+            "fortitude": {
+              "type": "integer"
+            },
+            "reflex": {
+              "type": "integer"
+            },
+            "will": {
+              "type": "integer"
+            }
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "qty": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "personality": {
+      "type": "object",
+      "properties": {
+        "temperament": {
+          "type": "string"
+        },
+        "ideals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fears": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "motivations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "flaws": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "memory": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "location",
+        "faction",
+        "mood"
+      ],
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "faction": {
+          "type": "string"
+        },
+        "mood": {
+          "type": "string"
+        },
+        "current_task": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
