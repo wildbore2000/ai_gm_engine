@@ -63,6 +63,62 @@ Visit: [http://localhost:5173](http://localhost:5173)
 * `worlds`
 * `events`
 
+### How to Seed via SQL
+
+You can populate your database with sample data using these SQL snippets in the Supabase SQL Editor:
+
+#### Entities
+```sql
+INSERT INTO entities (id, name, tags, srd, personality, status, relationships) VALUES 
+('npc_mira', 'Mira Stonewind', '["npc", "ranger", "human"]', 
+ '{"level": 3, "ancestry": "Human", "role": "Ranger", "alignment": "CG", "stats": {"str": 12, "dex": 18, "con": 14, "int": 10, "wis": 16, "cha": 11}, "hp": 28, "ac": 17, "saves": {"fortitude": 6, "reflex": 9, "will": 5}, "skills": {"survival": 8, "stealth": 7, "diplomacy": 3}, "abilities": ["Hunt Prey", "Twin Takedown"], "inventory": [{"name": "Longbow", "type": "weapon", "qty": 1}, {"name": "Healing Potion", "type": "consumable", "qty": 1}]}',
+ '{"temperament": "quiet and observant", "ideals": ["freedom", "nature above civilization"], "fears": ["being caged"], "motivations": ["protect wildlands", "redeem family name"], "flaws": ["acts before asking"]}',
+ '{"location": "greenfall_edge", "faction": "Rangers of the Vale", "mood": "cautious", "current_task": "patrol"}',
+ '{"npc_raider_chief": "uncertain ally", "player": "ally"}');
+```
+
+#### Factions
+```sql
+INSERT INTO factions (id, name, tags, ideology, goals, pressure, stability, resources, relations, leaders) VALUES 
+('f_raiders', 'Ash Dune Riders', '["raiders", "nomads"]', 'Strength through freedom', 
+ '["control trade routes", "undermine town council"]', 0.42, 0.58,
+ '{"food": 40, "mounts": 25, "weapons": 60}',
+ '{"f_town": -35, "f_rangers": -10}',
+ '["npc_raider_chief"]');
+```
+
+#### Worlds  
+```sql
+INSERT INTO worlds (id, time, weather, locations, factions, events, history_log, tension) VALUES 
+('world_greenfall', 'Day 12, 03:00', 'rain', 
+ '["greenfall", "greenfall_edge", "old_road"]',
+ '{"f_raiders": {"pressure": 0.42, "stability": 0.58}}',
+ '["raider_scout_spotted", "storm_warning"]',
+ '["Day 11: merchant caravan robbed"]',
+ 0.47);
+```
+
+#### Arcs
+```sql
+INSERT INTO arcs (id, title, stage, goal, progress, triggers, beats, pressure_vector, owner) VALUES 
+('arc_cult_rise', 'Whispers Beneath Greenfall', 'rumors', 'destabilize settlement from within', 0.22,
+ '["nightmares", "missing supplies"]',
+ '["first rumor", "suspicious sermon", "disappearance"]',
+ '{"f_town": 0.2, "f_cult": 0.5}',
+ 'f_cult');
+```
+
+#### Events
+```sql
+INSERT INTO events (id, world_id, type, title, payload, priority, source, tags) VALUES 
+('event_rumor_001', 'world_greenfall', 'rumor', 'Strange Lights in the Woods', 
+ '{"content": "Travelers report eerie blue lights dancing between the trees near the old shrine", "source": "merchant_caravan", "reliability": 0.7}',
+ 1, 'npc_merchant', '["mystery", "supernatural"]'),
+('event_dialogue_001', 'world_greenfall', 'dialogue', 'Concerned Guard Captain', 
+ '{"speaker": "npc_captain_hayes", "content": "We need more patrols. Something is stirring in the wilderness.", "mood": "worried", "location": "town_barracks"}',
+ 2, 'tension_system', '["warning", "military"]');
+```
+
 ---
 
 ## Development Notes
@@ -110,7 +166,9 @@ supabase functions deploy advanceWorldTick --project-ref YOUR_PROJECT_REF
 * [x] Entities Manager
 * [x] Factions & Arcs Manager
 * [x] World Editor
-* [ ] Supabase integration (CRUD + Realtime)
+* [x] Supabase integration (CRUD + Realtime)
+* [x] Events Manager with quick actions
+* [x] Realtime sync for Factions, Arcs, Worlds, Events
 * [ ] Edge Functions for simulation (advance time, spawn events)
 * [ ] Encounter mode (turn-based resolution)
 * [ ] Narrative generator driven by LLM

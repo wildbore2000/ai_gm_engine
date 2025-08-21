@@ -1,11 +1,14 @@
 import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 export type FactionRow = {
-  id:string; name:string; tags:string[]; ideology?:string;
+  id:string; world_id: string; name:string; tags:string[]; ideology?:string;
   goals:string[]; pressure:number; stability:number;
   resources:any; relations:any; leaders?:string[];
 };
-export async function listFactions(): Promise<FactionRow[]> {
-  const { data, error } = await supabase.from("factions").select("*").order("name",{ascending:true});
+export async function listFactions(worldId: string): Promise<FactionRow[]> {
+  const { data, error } = await supabase.from("factions")
+    .select("*").eq("world_id", worldId)
+    .order("name", { ascending: true });
   if (error) throw error; return data ?? [];
 }
 export async function upsertFaction(row: FactionRow): Promise<FactionRow> {
@@ -13,3 +16,10 @@ export async function upsertFaction(row: FactionRow): Promise<FactionRow> {
   if (error) throw error; return data!;
 }
 export async function deleteFaction(id:string){ const { error } = await supabase.from("factions").delete().eq("id",id); if (error) throw error; }
+
+export function onFactionsChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel("factions-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "factions" }, cb)
+    .subscribe();
+}

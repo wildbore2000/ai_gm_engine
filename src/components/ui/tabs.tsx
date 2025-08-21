@@ -10,9 +10,14 @@ export const Tabs: React.FC<TabsProps> = ({ defaultValue, children }) => {
 }
 
 export const TabsList: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
-  const base: React.CSSProperties = { display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap: 8, marginBottom: 12 }
-  return <div {...props} style={{ ...base, ...style }}>{children}</div>
-}
+  const base: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))',
+    gap: 8,
+    marginBottom: 12
+  };
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>;
+};
 
 export const TabsTrigger: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }> = ({ value, children }) => {
   const ctx = React.useContext(Ctx)!
