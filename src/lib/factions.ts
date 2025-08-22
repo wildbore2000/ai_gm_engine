@@ -1,9 +1,18 @@
 import { supabase } from "./supabase";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 export type FactionRow = {
-  id:string; world_id: string; name:string; tags:string[]; ideology?:string;
-  goals:string[]; pressure:number; stability:number;
-  resources:any; relations:any; leaders?:string[];
+  id: string; // UUID
+  world_id: string; // UUID
+  name: string;
+  tags: string[];
+  ideology?: string;
+  goals: string[];
+  pressure: number;
+  stability: number;
+  resources: any;
+  relations: any;
+  leaders?: string[];
+  created_at: string;
 };
 export async function listFactions(worldId: string): Promise<FactionRow[]> {
   const { data, error } = await supabase.from("factions")

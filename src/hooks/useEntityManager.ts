@@ -14,12 +14,11 @@ interface Entity {
   [key: string]: any;
 }
 
-export function useEntityManager(worldId: string) {
+export function useEntityManager(worldId: string | null) {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selected, setSelected] = useState(-1);
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
   
   const debouncedQuery = useDebounce(query, 300);
 
@@ -166,10 +165,8 @@ export function useEntityManager(worldId: string) {
     
     try {
       await upsertEntity(currentEntity);
-      setErrors([]);
     } catch (e) {
       console.error('Failed to save entity:', e);
-      setErrors(['Failed to save entity']);
     }
   }, [selected, currentEntity]);
 
@@ -181,7 +178,6 @@ export function useEntityManager(worldId: string) {
       // State will be updated via realtime subscription
     } catch (e) {
       console.error('Failed to delete entity:', e);
-      setErrors(['Failed to delete entity']);
     }
   }, [selected, currentEntity]);
 
@@ -243,8 +239,6 @@ export function useEntityManager(worldId: string) {
     query,
     setQuery,
     isLoading,
-    errors,
-    setErrors,
     updateEntity,
     updateNestedEntity,
     saveEntity,

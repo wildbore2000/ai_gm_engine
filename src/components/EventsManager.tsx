@@ -1,18 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { PlusCircle, Trash2, Upload, Download, Save, Eye, Edit3 } from "lucide-react";
-import { listEvents, insertEvent, onEventsChange, type EventRow } from "@/lib/events";
+import { Eye, Edit3 } from "lucide-react";
+import { listEvents, insertEvent, deleteEvent, onEventsChangeForWorld, type EventRow } from "@/lib/events";
+import { useWorld } from "../context/WorldContext";
+import ActionBar, { type ActionDef } from "./ui/ActionBar";
 
 interface EventsManagerProps {
-  worldId: string;
+  worldId?: string;
 }
 
-export default function EventsManager({ worldId }: EventsManagerProps) {
+export default function EventsManager({ worldId: propWorldId }: EventsManagerProps) {
+  const { worldId: contextWorldId } = useWorld();
+  const worldId = propWorldId || contextWorldId;
   const [events, setEvents] = useState<EventRow[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -31,12 +37,8 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
   useEffect(() => {
     if (!worldId) return;
     
-    const subscription = onEventsChange((payload) => {
+    const subscription = onEventsChangeForWorld(worldId, (payload) => {
       const { eventType, new: newRow, old: oldRow } = payload;
-      
-      // Only handle events for the current world
-      if (newRow && (newRow as any).world_id !== worldId) return;
-      if (oldRow && (oldRow as any).world_id !== worldId) return;
       
       switch (eventType) {
         case 'INSERT':
@@ -75,8 +77,10 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
   }, [worldId, selected]);
 
 
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
+    if (!worldId) return;
     try {
+      setIsLoading(true);
       const rows = await listEvents(worldId);
       setEvents(rows);
       if (rows.length > 0) {
@@ -87,8 +91,10 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
       // Clear events if loading fails (world might be deleted)
       setEvents([]);
       setSelected(null);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [worldId]);
 
   const createQuickRumor = async () => {
     if (!worldId) {
@@ -96,6 +102,7 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
       return;
     }
     try {
+      setIsLoading(true);
       const rumorEvent = {
         world_id: worldId,
         type: "rumor",
@@ -114,6 +121,8 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
       setSelected(0);
     } catch (e) {
       console.error("Failed to create rumor:", e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,6 +132,7 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
       return;
     }
     try {
+      setIsLoading(true);
       const dialogueEvent = {
         world_id: worldId,
         type: "dialogue",
@@ -142,15 +152,28 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
       setSelected(0);
     } catch (e) {
       console.error("Failed to create dialogue:", e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const deleteEvent = (index: number) => {
-    setEvents(prev => prev.filter((_, i) => i !== index));
-    if (selected === index) {
-      setSelected(events.length > 1 ? 0 : null);
-    } else if (selected !== null && selected > index) {
-      setSelected(selected - 1);
+  const handleDeleteEvent = async (index: number) => {
+    const event = events[index];
+    if (!event) return;
+    
+    try {
+      setIsLoading(true);
+      await deleteEvent(event.id);
+      // State will sync via realtime subscription
+      if (selected === index) {
+        setSelected(events.length > 1 ? 0 : null);
+      } else if (selected !== null && selected > index) {
+        setSelected(selected - 1);
+      }
+    } catch (e) {
+      console.error("Failed to delete event:", e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -185,12 +208,106 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
     });
   };
 
+  // Additional handlers for ActionBar
+  const handleNew = useCallback(() => {
+    createQuickRumor();
+  }, [createQuickRumor]);
+
+  const handleSave = useCallback(() => {
+    // TODO: Implement save logic for current event
+    console.log("Save current event - TODO");
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (selected !== null) {
+      await handleDeleteEvent(selected);
+    }
+  }, [selected, handleDeleteEvent]);
+
+  const handleRefresh = useCallback(() => {
+    if (worldId) {
+      loadEvents();
+    }
+  }, [worldId, loadEvents]);
+
+  const handleFilter = useCallback(() => {
+    setShowFilter(prev => !prev);
+  }, []);
+
+  const handleImportClick = useCallback(() => {
+    fileRef.current?.click();
+  }, []);
+
+  const handleExport = useCallback(() => {
+    downloadEvents();
+  }, [downloadEvents]);
+
   const filtered = events.filter(event => {
     const searchText = `${event.type} ${event.title || ''} ${event.tags?.join(' ') || ''}`.toLowerCase();
     return searchText.includes(query.toLowerCase());
   });
 
   const currentEvent = selected !== null ? events[selected] : null;
+
+  // Action definitions
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: worldId ? "Create a new event" : "Select a world to create events",
+      kbd: "N",
+      onClick: handleNew,
+      disabled: !worldId,
+      variant: "primary"
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: currentEvent ? "Save current event" : "Select an event to save",
+      kbd: "Ctrl+S",
+      onClick: handleSave,
+      disabled: !currentEvent
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: currentEvent ? "Delete selected event" : "Select an event to delete",
+      kbd: "Del",
+      onClick: handleDelete,
+      disabled: !currentEvent,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh events list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "filter",
+      label: "Filter",
+      tooltip: "Toggle filter panel",
+      kbd: "F",
+      onClick: handleFilter,
+      variant: showFilter ? "primary" : "ghost"
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import events from file",
+      onClick: handleImportClick
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: "Export events to file",
+      onClick: handleExport
+    }
+  ];
 
   if (!worldId) {
     return (
@@ -201,32 +318,57 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
   }
 
   return (
-    <div className="flex gap-4">
-      {/* Events Sidebar */}
-      <div className="w-80">
+    <div className="space-y-4">
+      {/* ActionBar */}
+      <ActionBar
+        title="Events"
+        scope="events"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      {/* Filter Panel */}
+      {showFilter && (
         <Card>
-          <CardContent className="p-4 space-y-3">
-            {/* Simple Action Bar */}
-            <div className="flex items-center justify-center gap-1 p-2 bg-slate-900/50 rounded-md border border-slate-700">
-              <Button variant="secondary" onClick={createQuickRumor} title="Add Rumor">
-                <PlusCircle className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" onClick={() => selected !== null && deleteEvent(selected)} disabled={selected === null} title="Delete">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" onClick={() => setIsEditMode(!isEditMode)} title={isEditMode ? "View Mode" : "Edit Mode"}>
-                {isEditMode ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
-              </Button>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium mb-2">Filter Options</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Search</label>
+                <input 
+                  className="w-full rounded-md bg-slate-800 border border-slate-700 px-2 py-1 text-sm" 
+                  placeholder="Search events..." 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                />
+              </div>
             </div>
-            
-            <div>
-              <input 
-                className="w-full rounded-md bg-slate-950/60 border border-slate-800 px-2 py-1 text-sm" 
-                placeholder="Search events..." 
-                value={query} 
-                onChange={(e) => setQuery(e.target.value)} 
-              />
-            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Hidden file input */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+        onChange={onImport}
+      />
+
+      <div className="flex gap-4">
+        {/* Events Sidebar */}
+        <div className="w-80">
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              {/* Edit Mode Toggle */}
+              <div className="flex justify-center">
+                <Button variant="secondary" onClick={() => setIsEditMode(!isEditMode)} title={isEditMode ? "View Mode" : "Edit Mode"}>
+                  {isEditMode ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+                  <span className="ml-2">{isEditMode ? "View Mode" : "Edit Mode"}</span>
+                </Button>
+              </div>
             
             <div className="grid gap-2 max-h-[420px] overflow-auto">
               {filtered.map((event, i) => (
@@ -239,20 +381,9 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
                       : 'border-slate-800 hover:bg-slate-800/40'
                   }`}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">{event.title || event.type}</div>
-                      <div className="text-xs opacity-70">{event.type} • Priority {event.priority}</div>
-                    </div>
-                    <Button
-                      variant="secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteEvent(events.findIndex(ev => ev.id === event.id));
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{event.title || event.type}</div>
+                    <div className="text-xs opacity-70">{event.type} • Priority {event.priority}</div>
                   </div>
                 </div>
               ))}
@@ -316,6 +447,7 @@ export default function EventsManager({ worldId }: EventsManagerProps) {
             Select an event to view details
           </div>
         )}
+      </div>
       </div>
     </div>
   );

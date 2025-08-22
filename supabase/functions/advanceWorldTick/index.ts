@@ -3,12 +3,20 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req) => {
   const { world_id, hours = 1 } = await req.json();
+  const userToken = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   const url = Deno.env.get("SUPABASE_URL")!;
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const db = createClient(url, key);
 
   const { data: world, error: werr } = await db.from("worlds").select("*").eq("id", world_id).single();
   if (werr || !world) return new Response(JSON.stringify({ ok: false, error: werr?.message || "world not found" }), { status: 400 });
+
+  // Optional safety: if caller sent a user token, verify ownership
+  if (userToken) {
+    const userClient = createClient(url, userToken);
+    const { data: owned, error: oerr } = await userClient.from("worlds").select("id").eq("id", world_id).single();
+    if (oerr || !owned) return new Response(JSON.stringify({ ok:false, error:"forbidden" }), { status: 403 });
+  }
 
   // naive time + tension drift
   const time = `${world.time || "Day 1, 00:00"} (+${hours}h)`;

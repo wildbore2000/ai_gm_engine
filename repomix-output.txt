@@ -1,0 +1,5517 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+.claude/settings.local.json
+.gitignore
+CLAUDE.md
+docs/seeds.sql
+engine/overseer.py
+engine/rails.py
+index.html
+package.json
+postcss.config.js
+README.md
+run_sim.py
+schemas/arc.schema.json
+schemas/entity.schema.json
+schemas/faction.schema.json
+schemas/gameevent.schema.json
+schemas/worldstate.schema.json
+src/App.tsx
+src/components/EngineEditor.tsx
+src/components/EventsManager.tsx
+src/components/Login.tsx
+src/components/managers/ArcsManager.tsx
+src/components/managers/EntitiesManager.tsx
+src/components/managers/FactionsManager.tsx
+src/components/managers/WorldsManager.tsx
+src/components/ui/ActionBar.tsx
+src/components/ui/button.tsx
+src/components/ui/card.tsx
+src/components/ui/input.tsx
+src/components/ui/tabs.tsx
+src/components/ui/textarea.tsx
+src/components/utils/validation.ts
+src/components/WorldSidebar.tsx
+src/context/AuthContext.tsx
+src/context/WorldContext.tsx
+src/hooks/useDebounce.ts
+src/hooks/useEntityManager.ts
+src/index.css
+src/lib/arcs.ts
+src/lib/entities.ts
+src/lib/events.ts
+src/lib/factions.ts
+src/lib/supabase.ts
+src/lib/worlds.ts
+src/main.tsx
+src/pages/GameScreen.tsx
+src/schemas/json-schema-2020-12.json
+src/vite-env.d.ts
+supabase/functions/advanceWorldTick/index.ts
+supabase/schema.sql
+tailwind.config.js
+tsconfig.json
+tsconfig.tsbuildinfo
+vite.config.ts
+
+================================================================
+Files
+================================================================
+
+================
+File: .claude/settings.local.json
+================
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(repomix)",
+      "Bash(npx:*)",
+      "Bash(npm run build:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(npm run dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
+
+================
+File: .gitignore
+================
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production build
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Temporary folders
+tmp/
+temp/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+================
+File: CLAUDE.md
+================
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Architecture Overview
+
+This is an AI Game Master Engine with Supabase backend integration consisting of multiple components:
+
+### Frontend (React/TypeScript)
+- **`src/components/EngineEditor.tsx`**: Main editor component with tabbed interface for editing game data
+- **`src/components/ui/`**: Reusable UI components (buttons, cards, inputs, tabs, textareas)
+- Uses Vite, React, TypeScript, TailwindCSS, ShadCN components, and Framer Motion
+- JSON schema validation using AJV library
+- Supabase integration for data persistence and real-time sync
+
+### Backend Options
+- **Supabase (Primary)**: Postgres database with Row-Level Security, optional Edge Functions for server-side simulation
+- **Local Python (Legacy)**: Pure Python simulation with file-based storage
+  - `engine/overseer.py`: AI/heuristic engine that proposes GameEvents based on world state and tension levels
+  - `engine/rails.py`: Deterministic event handlers that apply GameEvents to modify world state
+  - `run_sim.py`: Main simulation runner that executes overseer passes and applies events
+
+### Data Layer
+- **`data/`**: JSON data files for local development and testing
+- **`schemas/`**: JSON Schema definitions for data validation
+- **Supabase tables**: entities, factions, arcs, worlds, events with real-time capabilities
+
+## Development Commands
+
+### Frontend Development
+```bash
+npm run dev        # Start development server (Vite) on port 5173
+npm run build      # Build for production (TypeScript compilation + Vite build)
+npm run preview    # Preview production build
+```
+
+### Backend Simulation
+```bash
+python run_sim.py  # Run single overseer pass and apply first event
+```
+
+## Key Data Types
+
+The system uses 5 core JSON schemas:
+- **Entity**: NPCs with SRD stats, personality, relationships, and status
+- **Faction**: Groups with goals, resources, stability, and inter-faction relations
+- **WorldState**: Global state including time, weather, locations, faction data, and tension
+- **Arc**: Story arcs with progress tracking and pressure vectors
+- **GameEvent**: Events with type, payload, and priority for world modification
+
+## Environment Setup
+
+Create a `.env` file with Supabase credentials:
+```
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+
+Set up Supabase database using `/supabase/schema.sql` for tables: entities, factions, arcs, worlds, events.
+
+## Development Notes
+
+- World tension drives event generation: low tension → rumors, high tension → dialogue/conflict
+- The frontend editor provides real-time JSON validation and CRUD operations with Supabase sync
+- Supabase Edge Functions can handle server-side simulation and world advancement
+- Local Python simulation remains available for pure file-based development
+- Data files in `data/` provide sample content for testing the simulation loop
+- Row-Level Security policies control data access in Supabase
+
+================
+File: docs/seeds.sql
+================
+-- docs/seeds.sql
+-- Example seed data for AI GM Engine
+
+-- Entities
+INSERT INTO entities (id, name, tags, srd, personality, status, relationships) VALUES 
+('npc_mira', 'Mira Stonewind', '["npc", "ranger", "human"]', 
+ '{"level": 3, "ancestry": "Human", "role": "Ranger", "alignment": "CG", "stats": {"str": 12, "dex": 18, "con": 14, "int": 10, "wis": 16, "cha": 11}, "hp": 28, "ac": 17, "saves": {"fortitude": 6, "reflex": 9, "will": 5}, "skills": {"survival": 8, "stealth": 7, "diplomacy": 3}, "abilities": ["Hunt Prey", "Twin Takedown"], "inventory": [{"name": "Longbow", "type": "weapon", "qty": 1}, {"name": "Healing Potion", "type": "consumable", "qty": 1}]}',
+ '{"temperament": "quiet and observant", "ideals": ["freedom", "nature above civilization"], "fears": ["being caged"], "motivations": ["protect wildlands", "redeem family name"], "flaws": ["acts before asking"]}',
+ '{"location": "greenfall_edge", "faction": "Rangers of the Vale", "mood": "cautious", "current_task": "patrol"}',
+ '{"npc_raider_chief": "uncertain ally", "player": "ally"}');
+
+-- Factions
+INSERT INTO factions (id, name, tags, ideology, goals, pressure, stability, resources, relations, leaders) VALUES 
+('f_raiders', 'Ash Dune Riders', '["raiders", "nomads"]', 'Strength through freedom', 
+ '["control trade routes", "undermine town council"]', 0.42, 0.58,
+ '{"food": 40, "mounts": 25, "weapons": 60}',
+ '{"f_town": -35, "f_rangers": -10}',
+ '["npc_raider_chief"]');
+
+-- Worlds  
+INSERT INTO worlds (id, name, time, weather, locations, factions, events, history_log, tension) VALUES 
+('world_greenfall', 'Greenfall Valley', 'Day 12, 03:00', 'rain', 
+ '["greenfall", "greenfall_edge", "old_road"]',
+ '{"f_raiders": {"pressure": 0.42, "stability": 0.58}}',
+ '["raider_scout_spotted", "storm_warning"]',
+ '["Day 11: merchant caravan robbed"]',
+ 0.47);
+
+-- Arcs
+INSERT INTO arcs (id, title, stage, goal, progress, triggers, beats, pressure_vector, owner) VALUES 
+('arc_cult_rise', 'Whispers Beneath Greenfall', 'rumors', 'destabilize settlement from within', 0.22,
+ '["nightmares", "missing supplies"]',
+ '["first rumor", "suspicious sermon", "disappearance"]',
+ '{"f_town": 0.2, "f_cult": 0.5}',
+ 'f_cult');
+
+-- Events
+INSERT INTO events (id, world_id, type, title, payload, priority, source, tags) VALUES 
+('event_rumor_001', 'world_greenfall', 'rumor', 'Strange Lights in the Woods', 
+ '{"content": "Travelers report eerie blue lights dancing between the trees near the old shrine", "source": "merchant_caravan", "reliability": 0.7}',
+ 1, 'npc_merchant', '["mystery", "supernatural"]'),
+('event_dialogue_001', 'world_greenfall', 'dialogue', 'Concerned Guard Captain', 
+ '{"speaker": "npc_captain_hayes", "content": "We need more patrols. Something is stirring in the wilderness.", "mood": "worried", "location": "town_barracks"}',
+ 2, 'tension_system', '["warning", "military"]');
+
+================
+File: engine/overseer.py
+================
+# engine/overseer.py
+"""Mock Overseer: proposes GameEvents from compact world snapshots.
+Replace with an LLM call or heuristic later."""
+from typing import List, Dict, Any
+
+def overseer_pass(world: Dict[str, Any], arcs: List[Dict[str, Any]], entities: List[Dict[str, Any]], diff: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    tension = world.get("tension", 0.0)
+    proposals: List[Dict[str, Any]] = []
+
+    # Simple heuristic: if tension moderate, seed a rumor; if high, push a parley
+    if tension < 0.6:
+        proposals.append({
+            "id": "ev_rumor_001",
+            "type": "rumor",
+            "title": "Child from the woods",
+            "payload": {
+                "location": "greenfall",
+                "content": "A child claims the village is under siege—details are inconsistent.",
+                "impacts": {"f_town": {"stability": -0.03}}
+            },
+            "priority": 3,
+            "tags": ["hook","investigation"]
+        })
+    else:
+        proposals.append({
+            "id": "ev_negotiation_offer",
+            "type": "dialogue",
+            "title": "Parley with the Ash Dune Riders",
+            "payload": {
+                "speaker": "npc_raider_chief",
+                "targets": ["player"],
+                "options": ["pay_tribute","joint_raid","betray_town","refuse"],
+                "skill_checks": {"diplomacy": 18, "deception": 16}
+            },
+            "priority": 4
+        })
+
+    return proposals
+
+================
+File: engine/rails.py
+================
+# engine/rails.py
+"""Rails: deterministic handlers that apply GameEvents to the world state."""
+from typing import Dict, Any, List
+
+def apply_event(world: Dict[str, Any], event: Dict[str, Any]) -> Dict[str, Any]:
+    etype = event.get("type")
+    payload = event.get("payload", {})
+    diff: Dict[str, Any] = {"world": {}, "log": []}
+
+    if etype == "rumor":
+        content = payload.get("content", "") 
+        world.setdefault("history_log", []).append(f"Rumor: {content}")
+        # Apply simple stability impact if present
+        impacts = payload.get("impacts", {})
+        for fac, changes in impacts.items():
+            # In this minimal demo, factions are keyed in world["factions"]
+            if fac in world.get("factions", {}):
+                for k, v in changes.items():
+                    # Only handle numeric fields
+                    if isinstance(v, (int, float)):
+                        old = world["factions"][fac].get(k, 0.0)
+                        world["factions"][fac][k] = old + v
+                        diff["world"].setdefault("factions", {}).setdefault(fac, {})[k] = {"from": old, "to": old+v}
+        diff["log"].append(f"Applied rumor '{event.get('title')}'")    
+
+    elif etype == "dialogue":
+        # In a real engine, push a dialogue state machine / UI hook
+        world.setdefault("events", []).append("dialogue_available")
+        diff["log"].append(f"Dialogue queued: {payload.get('speaker','unknown')} -> {payload.get('targets', [])}")
+    else:
+        diff["log"].append(f"Unhandled event type: {etype}")
+
+    return diff
+
+================
+File: index.html
+================
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engine Editor UI</title>
+    <style>
+      :root { --bg: #0b0d12; --card:#121620; --text:#e6ecff; --muted:#99a3c2; --accent:#5476ff; --border:#1f2635; }
+      html, body, #root { height: 100%; }
+      body { margin:0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+      .container { padding: 24px; max-width: 1100px; margin: 0 auto; }
+      .muted { color: var(--muted); }
+      .grid { display: grid; gap: 12px; }
+      .row { display:flex; align-items:center; gap: 8px; }
+      .spacer { flex:1; }
+      .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      .textarea { width: 100%; min-height: 320px; resize: vertical; }
+      .error { color: #ff6b6b; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+================
+File: package.json
+================
+{
+  "name": "engine-editor-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.55.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.441.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.23",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^17.2.1",
+    "postcss": "^8.5.6",
+    "repomix": "^1.3.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
+
+================
+File: postcss.config.js
+================
+// postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+
+================
+File: README.md
+================
+# AI GM Engine
+
+An experimental **AI-driven Game Master engine** inspired by tabletop RPGs and games like *RimWorld*, *Baldur’s Gate*, and *Neverwinter Nights*.  
+
+This project is both a **world editor** (define entities, factions, arcs, and events) and a **GM Screen** that lets you **advance time, trigger encounters, and watch your world evolve in real-time**.  
+Supabase provides persistence, authentication, realtime sync, and optional Edge Functions for simulation.
+
+---
+
+## ✨ Vision
+
+The **AI GM Engine** is designed to:
+
+- **Simulate living worlds** that progress on their own (time ticks, tensions shift, factions act).
+- **Give GMs control** via a unified **GM Screen** with HUD, event feed, map grid, party, and quests.
+- **Keep all data world-scoped**, so you can run multiple worlds in parallel without cross-contamination.
+- **Stay deterministic first** (simple systems generate events); later, **LLM flavor text** enriches the narrative.
+
+---
+
+## 🔑 Features
+- **Unified Manager Interface** – CRUD editors with consistent ActionBar actions & keyboard shortcuts  
+- **GM Screen (play mode)** – world HUD, tension bar, event feed, map/locations, party pane, quests pane  
+- **World Naming System** – friendly world names with inline editing and display  
+- **Supabase Integration** – Postgres persistence, Row-Level Security, realtime events  
+- **Authentication System** – email/password login with secure sessions  
+- **Keyboard Accessibility** – N (new), Ctrl+S (save), Del (delete), R (refresh), V (validate)  
+- **Edge Functions** – optional server-side simulation (advance time, spawn rumors/events)  
+- **Modern UI** – React + Vite + TailwindCSS + ShadCN components  
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/YOURNAME/ai_gm_engine.git
+cd ai_gm_engine
+npm install
+```
+
+### 2. Environment Variables
+Create a `.env` file in the project root:
+
+```env
+VITE_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+
+Restart your dev server after adding env vars.
+
+### 3. Run Locally
+```bash
+npm run dev
+```
+Visit [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🗄️ Supabase Setup
+
+1. Create a Supabase project at [https://app.supabase.com](https://app.supabase.com).
+2. Copy your **Project URL** and **anon key** (browser) and **service role key** (Edge Functions).
+3. Open **SQL Editor** and run the schema in [`/supabase/schema.sql`](./supabase/schema.sql).
+4. Enable **Row Level Security** and run the provided policies.
+
+### Tables
+- `worlds` – name, time, weather, tension, locations, owner  
+- `entities` – NPCs, PCs, monsters, etc. (with tags, personality, relationships)  
+- `factions` – organizations with resources, pressure, stability  
+- `arcs` – narrative threads with stages, progress, triggers  
+- `events` – immutable event log tied to worlds
+
+Use this SQL to export the database structure:
+```sql
+  select table_name, column_name, data_type
+  from information_schema.columns
+  where table_schema = 'public'
+  order by table_name, ordinal_position;
+```
+
+
+### Seed Example Data
+
+You can populate your database with sample entities, factions, worlds, arcs, and events using the provided script:
+
+```bash
+psql < docs/seeds.sql
+```
+
+Or copy/paste the contents of [`docs/seeds.sql`](./docs/seeds.sql) into the **Supabase SQL Editor**.
+
+---
+
+## 🎮 Gameplay Loop
+
+- **World View (macro)** – Advance time, tensions drift, global events fire.  
+- **Location View (meso)** – Select a town/zone; surface local factions, NPCs, rumors.  
+- **Encounter Mode (micro)** – Resolve discrete conflicts turn-by-turn, generate consequences.  
+
+The GM Screen ties these together into a single, glanceable dashboard.
+
+---
+
+## 🧩 Development Notes
+- **Validation** with AJV schemas for JSON definitions.  
+- **Realtime** sync for collaborative editing or multi-device play.  
+- **UI Components** built with TailwindCSS + ShadCN (Tabs, Cards, Buttons, Sidebar).  
+- **Storage** default is Supabase Postgres, but structure is JSON-first (portable to SQLite, Mongo, etc.).  
+
+---
+
+## ⚡ Edge Functions
+
+Optional server-side logic can live in Supabase Functions.
+
+Example: **advanceWorldTick**
+
+```bash
+supabase functions new advanceWorldTick
+```
+
+Example function body (`docs/functions/advanceWorldTick.ts`):
+
+```ts
+Deno.serve(async (req) => {
+  const { world_id, hours } = await req.json();
+  // update world time + insert event
+  return new Response(JSON.stringify({ ok: true, world_id, hours }), {
+    headers: { "content-type": "application/json" }
+  });
+});
+```
+
+Deploy:
+
+```bash
+supabase functions deploy advanceWorldTick --project-ref YOUR_PROJECT_REF
+```
+
+---
+
+## 🔮 Roadmap
+
+### Phase 1 — Foundation
+- ✅ Auth with Supabase  
+- ✅ CRUD + realtime sync  
+- ✅ Worlds have names  
+- ✅ Unified ActionBar across managers  
+
+### Phase 2 — GM Screen
+- [ ] HUD (time, tension bar, world name)  
+- [ ] Event Feed with badges & filters  
+- [ ] Map grid & location selection  
+- [ ] Party pane (entities tagged `party`)  
+- [ ] Quests pane (active arcs)  
+
+### Phase 3 — Simulation Systems
+- [ ] Tick engine (advance time, drift tension, spawn rumors)  
+- [ ] Faction pressure & moves  
+- [ ] Encounter generator v0 (table-based)  
+
+### Phase 4 — AI Assist (optional)
+- [ ] Narrative flavor for events/encounters  
+- [ ] Procedural quest hooks  
+
+---
+
+## 📄 License
+MIT — build cool things.
+
+================
+File: run_sim.py
+================
+# run_sim.py
+import json, os
+from engine.overseer import overseer_pass
+from engine.rails import apply_event
+
+ROOT = os.path.dirname(__file__)
+
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+def main():
+    world = load_json(os.path.join(ROOT, 'data/world/world.json'))
+    arcs = [load_json(os.path.join(ROOT, 'data/world/arc_cult_rise.json'))]
+    entities = [load_json(os.path.join(ROOT, 'data/entities/npc_mira.json'))]
+
+    print('World tension:', world.get('tension'))
+    events = overseer_pass(world, arcs, entities, diff=None)
+
+    print(f"Proposed {len(events)} event(s):")
+    for e in events:
+        print('-', e['title'], f"({e['type']})" )
+
+    # Apply first event deterministically
+    if events:
+        diff = apply_event(world, events[0])
+        print('\nApplied first event. Diff:')
+        print(json.dumps(diff, indent=2))
+
+        # Save updated world snapshot
+        with open(os.path.join(ROOT, 'data/world/world_after.json'), 'w') as f:
+            json.dump(world, f, indent=2)
+        print("\nUpdated world saved to data/world/world_after.json")
+
+if __name__ == '__main__':
+    main()
+
+================
+File: schemas/arc.schema.json
+================
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/arc.json",
+  "title": "Arc",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "stage",
+    "goal",
+    "progress",
+    "triggers"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure_vector": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+
+================
+File: schemas/entity.schema.json
+================
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/entity.json",
+  "title": "Entity",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "tags",
+    "srd",
+    "personality",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "srd": {
+      "type": "object",
+      "required": [
+        "level",
+        "ancestry",
+        "role",
+        "stats",
+        "hp",
+        "ac"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer"
+        },
+        "ancestry": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "alignment": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "object",
+          "required": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha"
+          ],
+          "properties": {
+            "str": {
+              "type": "integer"
+            },
+            "dex": {
+              "type": "integer"
+            },
+            "con": {
+              "type": "integer"
+            },
+            "int": {
+              "type": "integer"
+            },
+            "wis": {
+              "type": "integer"
+            },
+            "cha": {
+              "type": "integer"
+            }
+          }
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "ac": {
+          "type": "integer"
+        },
+        "saves": {
+          "type": "object",
+          "properties": {
+            "fortitude": {
+              "type": "integer"
+            },
+            "reflex": {
+              "type": "integer"
+            },
+            "will": {
+              "type": "integer"
+            }
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "qty": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "personality": {
+      "type": "object",
+      "properties": {
+        "temperament": {
+          "type": "string"
+        },
+        "ideals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fears": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "motivations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "flaws": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "memory": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "location",
+        "faction",
+        "mood"
+      ],
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "faction": {
+          "type": "string"
+        },
+        "mood": {
+          "type": "string"
+        },
+        "current_task": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+
+================
+File: schemas/faction.schema.json
+================
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/faction.json",
+  "title": "Faction",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "goals",
+    "resources",
+    "relations"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ideology": {
+      "type": "string"
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pressure": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "stability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "leaders": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+
+================
+File: schemas/gameevent.schema.json
+================
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/gameevent.json",
+  "title": "GameEvent",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "title",
+    "payload",
+    "priority"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "spawn",
+        "dialogue",
+        "modify",
+        "rumor",
+        "quest",
+        "environment"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+
+================
+File: schemas/worldstate.schema.json
+================
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/worldstate.json",
+  "title": "WorldState",
+  "type": "object",
+  "required": [
+    "time",
+    "weather",
+    "locations",
+    "factions",
+    "events",
+    "history_log"
+  ],
+  "properties": {
+    "time": {
+      "type": "string"
+    },
+    "weather": {
+      "type": "string"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "factions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "schema/faction.json"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "history_log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tension": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "custom": {
+      "type": "object"
+    }
+  }
+}
+
+================
+File: src/App.tsx
+================
+import React, { useState } from "react";
+import { useAuth } from "./context/AuthContext";
+import Login from "./components/Login";
+import EngineEditor from "./components/EngineEditor";
+import GameScreen from "./pages/GameScreen";
+import { supabase } from "./lib/supabase";
+import { Play, Settings } from "lucide-react";
+
+export default function App() {
+  const { user, loading } = useAuth();
+  const [currentView, setCurrentView] = useState<'editor' | 'game'>('editor');
+  
+  if (loading) return <div className="p-6 text-slate-200">Loading…</div>;
+  if (!user) return <Login />;
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <header className="flex items-center justify-between p-3 border-b border-slate-800">
+        <div className="flex items-center gap-4">
+          <div className="font-semibold">AI GM Engine</div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentView('editor')}
+              className={`inline-flex items-center gap-2 rounded-lg px-3 py-1 transition-colors ${
+                currentView === 'editor' 
+                  ? 'bg-slate-700 text-slate-100' 
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+              }`}
+            >
+              <Settings className="w-4 h-4" /> Editor
+            </button>
+            <button
+              onClick={() => setCurrentView('game')}
+              className={`inline-flex items-center gap-2 rounded-lg px-3 py-1 transition-colors ${
+                currentView === 'game' 
+                  ? 'bg-slate-700 text-slate-100' 
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+              }`}
+            >
+              <Play className="w-4 h-4" /> Play
+            </button>
+          </div>
+        </div>
+        <button
+          onClick={() => supabase.auth.signOut()}
+          className="rounded-lg px-3 py-1 bg-slate-800 hover:bg-slate-700 transition-colors"
+        >Sign out</button>
+      </header>
+      {currentView === 'editor' ? <EngineEditor /> : <GameScreen />}
+    </div>
+  );
+}
+
+================
+File: src/components/EngineEditor.tsx
+================
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { PlusCircle, Save, Eye, Edit3, ChevronDown, Trash2, RotateCw, Pencil } from "lucide-react";
+import { listWorlds, createWorld, upsertWorld, advanceWorldTick, deleteWorld, renameWorld, onWorldsChange } from "@/lib/worlds";
+import { useWorld } from "../context/WorldContext";
+
+// Lazy load tab components  
+const EntitiesManager = lazy(() => import("./managers/EntitiesManager"));
+const FactionsManager = lazy(() => import("./managers/FactionsManager"));
+const ArcsManager = lazy(() => import("./managers/ArcsManager"));
+const EventsManager = lazy(() => import("./EventsManager"));
+
+// Loading fallback
+const TabLoadingFallback = () => (
+  <div className="flex items-center justify-center h-64">
+    <div className="text-sm opacity-70">Loading...</div>
+  </div>
+);
+
+// Removed placeholder managers - now using real managers
+
+// Memoized World Content component
+const WorldContent = React.memo(({ 
+  worldId, 
+  worldData,
+  worlds,
+  onWorldChange,
+  onNewWorld,
+  onDeleteWorld,
+  onRenameWorld
+}: { 
+  worldId: string;
+  worldData: any;
+  worlds: any[];
+  onWorldChange: (worldId: string) => void;
+  onNewWorld: () => void;
+  onDeleteWorld: () => void;
+  onRenameWorld: (id: string, name: string) => void;
+}) => {
+  const [isWorldEditMode, setIsWorldEditMode] = useState(false);
+  const [showWorldDropdown, setShowWorldDropdown] = useState(false);
+  const [isRenamingWorld, setIsRenamingWorld] = useState(false);
+  const [newWorldName, setNewWorldName] = useState("");
+
+  const advanceWorld = useCallback(async () => {
+    if (!worldId) return;
+    try {
+      const result = await advanceWorldTick(worldId, 1);
+      console.log("World advanced:", result);
+    } catch (e) {
+      console.error("Failed to advance world:", e);
+    }
+  }, [worldId]);
+
+  const saveWorld = useCallback(async () => {
+    if (!worldId || !worldData) return;
+    try {
+      await upsertWorld(worldData);
+      console.log("World saved");
+    } catch (e) {
+      console.error("Failed to save world:", e);
+    }
+  }, [worldId, worldData]);
+
+  const handleRenameWorld = useCallback(() => {
+    if (!worldData?.name) return;
+    setNewWorldName(worldData.name);
+    setIsRenamingWorld(true);
+    setShowWorldDropdown(false);
+  }, [worldData?.name]);
+
+  const handleRenameSubmit = useCallback(() => {
+    if (!worldId || !newWorldName.trim() || newWorldName.trim() === worldData?.name) {
+      setIsRenamingWorld(false);
+      setNewWorldName("");
+      return;
+    }
+    onRenameWorld(worldId, newWorldName.trim());
+    setIsRenamingWorld(false);
+    setNewWorldName("");
+  }, [worldId, newWorldName, worldData?.name, onRenameWorld]);
+
+  // Memoized world stats
+  const worldStats = useMemo(() => {
+    if (!worldData) return null;
+    
+    const tension = worldData.tension || 0;
+    const tensionColor = tension > 0.7 ? 'text-red-400' : 
+                       tension > 0.4 ? 'text-yellow-400' : 'text-green-400';
+    
+    return {
+      id: worldData.id || 'Unknown ID',
+      name: worldData.name || 'Unnamed World',
+      time: worldData.time || 'No time set',
+      weather: worldData.weather || 'Unknown',
+      tension: tension.toFixed(2),
+      tensionColor,
+      locationCount: (worldData.locations || []).length
+    };
+  }, [worldData]);
+
+  if (!worldId) {
+    return (
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        Please select a world to continue
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 flex flex-col">
+      {/* World Header */}
+      <div className="border-b border-slate-800 bg-slate-900/30">
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                {isRenamingWorld ? (
+                  <div className="flex items-center space-x-2 p-2 rounded-lg border border-slate-700 bg-slate-800">
+                    <div className="text-left flex-1">
+                      <input
+                        type="text"
+                        value={newWorldName}
+                        onChange={(e) => setNewWorldName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleRenameSubmit();
+                          } else if (e.key === 'Escape') {
+                            setIsRenamingWorld(false);
+                            setNewWorldName("");
+                          }
+                        }}
+                        onBlur={handleRenameSubmit}
+                        className="text-lg font-semibold bg-transparent text-white border-none outline-none w-full"
+                        autoFocus
+                      />
+                      <p className="text-xs text-slate-400">{worldStats?.time}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowWorldDropdown(!showWorldDropdown)}
+                    className="flex items-center space-x-2 p-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors"
+                  >
+                    <div className="text-left">
+                      <h1 className="text-lg font-semibold text-white" title={worldStats?.id}>{worldStats?.name}</h1>
+                      <p className="text-xs text-slate-400">{worldStats?.time}</p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-slate-400" />
+                  </button>
+                )}
+                
+                {showWorldDropdown && (
+                  <div className="absolute top-full left-0 mt-1 w-80 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
+                    <div className="p-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-slate-200">Select World</span>
+                        <Button variant="secondary" className="text-xs px-2 py-1" onClick={onNewWorld}>
+                          <PlusCircle className="h-3 w-3 mr-1" />New
+                        </Button>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto space-y-1">
+                        {worlds.map((world) => (
+                          <button
+                            key={world.id}
+                            onClick={() => {
+                              onWorldChange(world.id);
+                              setShowWorldDropdown(false);
+                            }}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${
+                              world.id === worldId
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-slate-300 hover:bg-slate-700'
+                            }`}
+                            title={world.id}
+                          >
+                            <div className="font-medium">{world.name || 'Unnamed World'}</div>
+                            <div className="text-xs opacity-70">{world.time} • {world.weather}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {worldStats && (
+                <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-slate-400">Weather:</span>
+                    <span className="text-white">{worldStats.weather}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-slate-400">Tension:</span>
+                    <span className={`font-medium ${worldStats.tensionColor}`}>
+                      {worldStats.tension}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-slate-400">Locations:</span>
+                    <span className="text-white">{worldStats.locationCount}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              {/* Enhanced World Action Bar */}
+              <div className="flex items-center gap-1 p-2 bg-slate-900/50 rounded-md border border-slate-700">
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setIsWorldEditMode(!isWorldEditMode)} 
+                  title={isWorldEditMode ? "View Mode" : "Edit Mode"}
+                >
+                  {isWorldEditMode ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+                </Button>
+                <Button variant="secondary" onClick={saveWorld} title="Save World">
+                  <Save className="h-4 w-4" />
+                </Button>
+                <Button variant="secondary" onClick={advanceWorld} title="Advance Time +1h">
+                  <PlusCircle className="h-4 w-4" />
+                </Button>
+                <Button variant="secondary" onClick={handleRenameWorld} title="Rename World">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button variant="secondary" onClick={onNewWorld} title="Create New World">
+                  <PlusCircle className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  onClick={onDeleteWorld} 
+                  title="Delete Current World"
+                  className="text-red-400 hover:text-red-300"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <Tabs defaultValue="entities" className="flex-1 flex flex-col">
+        <TabsList className="w-full border-b border-slate-800 rounded-none bg-transparent p-0">
+          <TabsTrigger value="entities">Entities</TabsTrigger>
+          <TabsTrigger value="factions">Factions</TabsTrigger>
+          <TabsTrigger value="arcs">Arcs</TabsTrigger>
+          <TabsTrigger value="events">Events</TabsTrigger>
+        </TabsList>
+
+        <div className="flex-1 overflow-auto">
+          <TabsContent value="entities">
+            <div className="p-4">
+              <Suspense fallback={<TabLoadingFallback />}>
+                <EntitiesManager worldId={worldId} />
+              </Suspense>
+            </div>
+          </TabsContent>
+          <TabsContent value="factions">
+            <div className="p-4">
+              <Suspense fallback={<TabLoadingFallback />}>
+                <FactionsManager />
+              </Suspense>
+            </div>
+          </TabsContent>
+          <TabsContent value="arcs">
+            <div className="p-4">
+              <Suspense fallback={<TabLoadingFallback />}>
+                <ArcsManager />
+              </Suspense>
+            </div>
+          </TabsContent>
+          <TabsContent value="events">
+            <div className="p-4">
+              <Suspense fallback={<TabLoadingFallback />}>
+                <EventsManager worldId={worldId} />
+              </Suspense>
+            </div>
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
+  );
+});
+
+WorldContent.displayName = 'WorldContent';
+
+// Main Engine Editor with optimizations
+export default function EngineEditor() {
+  const { worldId, setWorldId } = useWorld();
+  const [worlds, setWorlds] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Optimized world loading
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadWorlds = async () => {
+      try {
+        const worldList = await listWorlds();
+        if (!isCancelled) {
+          setWorlds(worldList);
+          if (worldList.length > 0 && !worldId) {
+            setWorldId(worldList[0].id);
+          }
+        }
+      } catch (e) {
+        if (!isCancelled) {
+          console.error("Failed to load worlds:", e);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadWorlds();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []); // Remove worldId dependency to prevent unnecessary reloads
+
+  // Optimized real-time updates
+  useEffect(() => {
+    const subscription = onWorldsChange((payload) => {
+      const { eventType, new: newRow, old: oldRow } = payload;
+      
+      setWorlds(prev => {
+        switch (eventType) {
+          case 'INSERT':
+            if (newRow) {
+              const exists = prev.find(w => w.id === newRow.id);
+              if (exists) return prev;
+              return [newRow, ...prev];
+            }
+            return prev;
+            
+          case 'UPDATE':
+            if (newRow) {
+              return prev.map(w => w.id === newRow.id ? newRow : w);
+            }
+            return prev;
+            
+          case 'DELETE':
+            if (oldRow) {
+              const newWorlds = prev.filter(w => w.id !== oldRow.id);
+              // Update selected world if it was deleted
+              if (worldId === oldRow.id) {
+                setWorldId(newWorlds.length > 0 ? newWorlds[0].id : null);
+              }
+              return newWorlds;
+            }
+            return prev;
+            
+          default:
+            return prev;
+        }
+      });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [worldId]);
+
+  const handleCreateWorld = useCallback(async () => {
+    const name = window.prompt("Name your world:");
+    if (!name?.trim()) return;
+    
+    try {
+      const newWorld = await createWorld(name.trim());
+      
+      setWorlds(prev => [newWorld, ...prev]);
+      setWorldId(newWorld.id);
+    } catch (e) {
+      console.error("Failed to create world:", e);
+      alert(`Failed to create world: ${(e as Error).message}`);
+    }
+  }, [setWorldId]);
+
+  const handleDeleteWorld = useCallback(async (worldId: string) => {
+    if (!confirm("Are you sure you want to delete this world?")) return;
+    
+    try {
+      await deleteWorld(worldId);
+      // State will be updated via realtime subscription
+    } catch (e) {
+      console.error("Failed to delete world:", e);
+    }
+  }, []);
+
+  // Memoized selected world
+  const selectedWorld = useMemo(() => {
+    return worlds.find(w => w.id === worldId);
+  }, [worlds, worldId]);
+
+  // All hooks must be called before any early returns
+  const handleDeleteCurrentWorld = useCallback(async () => {
+    if (!worldId) return;
+    await handleDeleteWorld(worldId);
+  }, [worldId, handleDeleteWorld]);
+
+  const handleRenameCurrentWorld = useCallback(async (id: string, name: string) => {
+    try {
+      await renameWorld(id, name);
+      // State will be updated via realtime subscription
+    } catch (e) {
+      console.error("Failed to rename world:", e);
+      alert(`Failed to rename world: ${(e as Error).message}`);
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
+        <div className="text-lg">Loading worlds...</div>
+      </div>
+    );
+  }
+
+  if (!worldId && worlds.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold mb-4">Welcome to AI Game Master Engine</h1>
+          <p className="text-slate-400 mb-6">Create your first world to get started</p>
+          <Button onClick={handleCreateWorld} className="px-6 py-3 text-lg">
+            <PlusCircle className="h-5 w-5 mr-2" />
+            Create First World
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!worldId) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold mb-4">Select a World</h1>
+          <p className="text-slate-400 mb-6">Choose a world to manage or create a new one</p>
+          <div className="space-y-2 max-w-md">
+            {worlds.map((world) => (
+              <button
+                key={world.id}
+                onClick={() => setWorldId(world.id)}
+                className="w-full p-3 text-left bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors"
+                title={world.id}
+              >
+                <div className="font-medium">{world.name || 'Unnamed World'}</div>
+                <div className="text-sm text-slate-400">{world.time} • {world.weather}</div>
+              </button>
+            ))}
+            <Button onClick={handleCreateWorld} className="w-full mt-4" variant="secondary">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Create New World
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen bg-slate-950 text-white">
+      <WorldContent
+        worldId={worldId}
+        worldData={selectedWorld}
+        worlds={worlds}
+        onWorldChange={setWorldId}
+        onNewWorld={handleCreateWorld}
+        onDeleteWorld={handleDeleteCurrentWorld}
+        onRenameWorld={handleRenameCurrentWorld}
+      />
+    </div>
+  );
+}
+
+================
+File: src/components/EventsManager.tsx
+================
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Eye, Edit3 } from "lucide-react";
+import { listEvents, insertEvent, deleteEvent, onEventsChange, type EventRow } from "@/lib/events";
+import { useWorld } from "../context/WorldContext";
+import ActionBar, { type ActionDef } from "./ui/ActionBar";
+
+interface EventsManagerProps {
+  worldId?: string;
+}
+
+export default function EventsManager({ worldId: propWorldId }: EventsManagerProps) {
+  const { worldId: contextWorldId } = useWorld();
+  const worldId = propWorldId || contextWorldId;
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!worldId) {
+      // Clear events when no world is selected
+      setEvents([]);
+      setSelected(null);
+      return;
+    }
+    // Clear events immediately when world changes to prevent stale data
+    setEvents([]);
+    setSelected(null);
+    loadEvents();
+  }, [worldId]);
+
+  useEffect(() => {
+    if (!worldId) return;
+    
+    const subscription = onEventsChange((payload) => {
+      const { eventType, new: newRow, old: oldRow } = payload;
+      
+      // Only handle events for the current world
+      if (newRow && (newRow as any).world_id !== worldId) return;
+      if (oldRow && (oldRow as any).world_id !== worldId) return;
+      
+      switch (eventType) {
+        case 'INSERT':
+          if (newRow) {
+            setEvents(prev => {
+              const exists = prev.find(e => e.id === newRow.id);
+              if (exists) return prev;
+              return [newRow, ...prev];
+            });
+          }
+          break;
+          
+        case 'UPDATE':
+          if (newRow) {
+            setEvents(prev => prev.map(e => e.id === newRow.id ? newRow : e));
+          }
+          break;
+          
+        case 'DELETE':
+          if (oldRow) {
+            setEvents(prev => {
+              const newEvents = prev.filter(e => e.id !== oldRow.id);
+              if (selected !== null && prev[selected]?.id === oldRow.id) {
+                setSelected(newEvents.length > 0 ? 0 : null);
+              }
+              return newEvents;
+            });
+          }
+          break;
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [worldId, selected]);
+
+
+  const loadEvents = useCallback(async () => {
+    if (!worldId) return;
+    try {
+      setIsLoading(true);
+      const rows = await listEvents(worldId);
+      setEvents(rows);
+      if (rows.length > 0) {
+        setSelected(0);
+      }
+    } catch (e) {
+      console.warn("Load events failed", e);
+      // Clear events if loading fails (world might be deleted)
+      setEvents([]);
+      setSelected(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [worldId]);
+
+  const createQuickRumor = async () => {
+    if (!worldId) {
+      console.warn("Cannot create rumor: No world selected");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const rumorEvent = {
+        world_id: worldId,
+        type: "rumor",
+        title: "New Rumor",
+        payload: {
+          content: "A mysterious rumor spreads through the settlement...",
+          source: "tavern_gossip",
+          reliability: 0.6
+        },
+        priority: 1,
+        tags: ["quick", "rumor"]
+      };
+      
+      const newEvent = await insertEvent(rumorEvent);
+      setEvents(prev => [newEvent, ...prev]);
+      setSelected(0);
+    } catch (e) {
+      console.error("Failed to create rumor:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const createQuickDialogue = async () => {
+    if (!worldId) {
+      console.warn("Cannot create dialogue: No world selected");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const dialogueEvent = {
+        world_id: worldId,
+        type: "dialogue",
+        title: "New Dialogue",
+        payload: {
+          speaker: "npc_unknown",
+          content: "I have something important to tell you...",
+          mood: "concerned",
+          location: "town_square"
+        },
+        priority: 2,
+        tags: ["quick", "dialogue"]
+      };
+      
+      const newEvent = await insertEvent(dialogueEvent);
+      setEvents(prev => [newEvent, ...prev]);
+      setSelected(0);
+    } catch (e) {
+      console.error("Failed to create dialogue:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteEvent = async (index: number) => {
+    const event = events[index];
+    if (!event) return;
+    
+    try {
+      setIsLoading(true);
+      await deleteEvent(event.id);
+      // State will sync via realtime subscription
+      if (selected === index) {
+        setSelected(events.length > 1 ? 0 : null);
+      } else if (selected !== null && selected > index) {
+        setSelected(selected - 1);
+      }
+    } catch (e) {
+      console.error("Failed to delete event:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const downloadEvents = () => {
+    if (!worldId) {
+      console.warn("Cannot download events: No world selected");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(events, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `events_${worldId || 'unknown'}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    file.text().then((text) => {
+      try {
+        const imported = JSON.parse(text);
+        if (Array.isArray(imported)) {
+          setEvents(imported);
+        }
+      } catch (err) {
+        console.error("Failed to import events:", err);
+      }
+    });
+  };
+
+  // Additional handlers for ActionBar
+  const handleNew = useCallback(() => {
+    createQuickRumor();
+  }, [createQuickRumor]);
+
+  const handleSave = useCallback(() => {
+    // TODO: Implement save logic for current event
+    console.log("Save current event - TODO");
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (selected !== null) {
+      await handleDeleteEvent(selected);
+    }
+  }, [selected, handleDeleteEvent]);
+
+  const handleRefresh = useCallback(() => {
+    if (worldId) {
+      loadEvents();
+    }
+  }, [worldId, loadEvents]);
+
+  const handleFilter = useCallback(() => {
+    setShowFilter(prev => !prev);
+  }, []);
+
+  const handleImportClick = useCallback(() => {
+    fileRef.current?.click();
+  }, []);
+
+  const handleExport = useCallback(() => {
+    downloadEvents();
+  }, [downloadEvents]);
+
+  const filtered = events.filter(event => {
+    const searchText = `${event.type} ${event.title || ''} ${event.tags?.join(' ') || ''}`.toLowerCase();
+    return searchText.includes(query.toLowerCase());
+  });
+
+  const currentEvent = selected !== null ? events[selected] : null;
+
+  // Action definitions
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: worldId ? "Create a new event" : "Select a world to create events",
+      kbd: "N",
+      onClick: handleNew,
+      disabled: !worldId,
+      variant: "primary"
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: currentEvent ? "Save current event" : "Select an event to save",
+      kbd: "Ctrl+S",
+      onClick: handleSave,
+      disabled: !currentEvent
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: currentEvent ? "Delete selected event" : "Select an event to delete",
+      kbd: "Del",
+      onClick: handleDelete,
+      disabled: !currentEvent,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh events list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "filter",
+      label: "Filter",
+      tooltip: "Toggle filter panel",
+      kbd: "F",
+      onClick: handleFilter,
+      variant: showFilter ? "primary" : "ghost"
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import events from file",
+      onClick: handleImportClick
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: "Export events to file",
+      onClick: handleExport
+    }
+  ];
+
+  if (!worldId) {
+    return (
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        Please select a world to view events
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* ActionBar */}
+      <ActionBar
+        title="Events"
+        scope="events"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      {/* Filter Panel */}
+      {showFilter && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium mb-2">Filter Options</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Search</label>
+                <input 
+                  className="w-full rounded-md bg-slate-800 border border-slate-700 px-2 py-1 text-sm" 
+                  placeholder="Search events..." 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Hidden file input */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+        onChange={onImport}
+      />
+
+      <div className="flex gap-4">
+        {/* Events Sidebar */}
+        <div className="w-80">
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              {/* Edit Mode Toggle */}
+              <div className="flex justify-center">
+                <Button variant="secondary" onClick={() => setIsEditMode(!isEditMode)} title={isEditMode ? "View Mode" : "Edit Mode"}>
+                  {isEditMode ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+                  <span className="ml-2">{isEditMode ? "View Mode" : "Edit Mode"}</span>
+                </Button>
+              </div>
+            
+            <div className="grid gap-2 max-h-[420px] overflow-auto">
+              {filtered.map((event, i) => (
+                <div 
+                  key={event.id} 
+                  onClick={() => setSelected(events.findIndex(e => e.id === event.id))} 
+                  className={`p-2 rounded-lg border cursor-pointer transition ${
+                    selected === events.findIndex(e => e.id === event.id) 
+                      ? 'border-indigo-500/70 bg-indigo-500/10 ring-1 ring-indigo-500/30' 
+                      : 'border-slate-800 hover:bg-slate-800/40'
+                  }`}
+                >
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{event.title || event.type}</div>
+                    <div className="text-xs opacity-70">{event.type} • Priority {event.priority}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Event Details */}
+      <div style={{ flex: 1 }}>
+        {currentEvent ? (
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs opacity-80">Type</label>
+                    <div className="text-sm font-medium p-2 bg-slate-900 rounded border">{currentEvent.type}</div>
+                  </div>
+                  <div>
+                    <label className="text-xs opacity-80">Priority</label>
+                    <div className="text-sm font-medium p-2 bg-slate-900 rounded border">{currentEvent.priority}</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-xs opacity-80">Title</label>
+                  <div className="text-sm p-2 bg-slate-900 rounded border">{currentEvent.title || 'Untitled'}</div>
+                </div>
+                
+                <div>
+                  <label className="text-xs opacity-80">Tags</label>
+                  <div className="text-sm p-2 bg-slate-900 rounded border">
+                    {currentEvent.tags?.join(', ') || 'No tags'}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-xs opacity-80">Source</label>
+                  <div className="text-sm p-2 bg-slate-900 rounded border">{currentEvent.source || 'Unknown'}</div>
+                </div>
+                
+                <div>
+                  <label className="text-xs opacity-80">Created At</label>
+                  <div className="text-sm p-2 bg-slate-900 rounded border">
+                    {new Date(currentEvent.created_at).toLocaleString()}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-xs opacity-80">Payload</label>
+                  <pre className="text-xs p-2 bg-slate-900 rounded border overflow-auto max-h-40">
+                    {JSON.stringify(currentEvent.payload, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            Select an event to view details
+          </div>
+        )}
+      </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/Login.tsx
+================
+import React, { useState } from "react";
+import { supabase } from "../lib/supabase";
+
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function onSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null); setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) setErr(error.message);
+    setLoading(false);
+  }
+
+  async function onSignUp(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null); setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) setErr(error.message);
+    setLoading(false);
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
+      <form onSubmit={onSignIn} className="w-full max-w-sm space-y-4 p-6 rounded-2xl bg-slate-900 shadow-lg">
+        <h1 className="text-xl font-semibold">Sign in</h1>
+        <input className="w-full rounded-lg p-2 bg-slate-800 border border-slate-700"
+               type="email" placeholder="you@domain.com" value={email}
+               onChange={(e)=>setEmail(e.target.value)} required />
+        <input className="w-full rounded-lg p-2 bg-slate-800 border border-slate-700"
+               type="password" placeholder="••••••••" value={password}
+               onChange={(e)=>setPassword(e.target.value)} required />
+        {err && <div className="text-red-400 text-sm">{err}</div>}
+        <div className="flex gap-2">
+          <button disabled={loading} className="flex-1 rounded-lg p-2 bg-indigo-600 hover:bg-indigo-500">{loading ? "…" : "Sign in"}</button>
+          <button onClick={onSignUp} className="flex-1 rounded-lg p-2 bg-slate-700 hover:bg-slate-600" type="button">Sign up</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+================
+File: src/components/managers/ArcsManager.tsx
+================
+import React, { useState, useCallback, useEffect } from "react";
+import { Card, CardContent } from "../ui/card";
+import ActionBar, { type ActionDef } from "../ui/ActionBar";
+import { useWorld } from "../../context/WorldContext";
+import { listArcs, upsertArc, deleteArc, onArcsChange, type ArcRow } from "@/lib/arcs";
+
+export default function ArcsManager() {
+  const { worldId } = useWorld();
+  const [arcs, setArcs] = useState<ArcRow[]>([]);
+  const [selectedArc, setSelectedArc] = useState<ArcRow | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [query, setQuery] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Load arcs on world change
+  useEffect(() => {
+    if (!worldId) {
+      setArcs([]);
+      setSelectedArc(null);
+      return;
+    }
+    loadArcs();
+  }, [worldId]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!worldId) return;
+    
+    const subscription = onArcsChange((payload) => {
+      const { eventType, new: newRow, old: oldRow } = payload;
+      
+      // Only handle events for the current world
+      if (newRow && (newRow as any).world_id !== worldId) return;
+      if (oldRow && (oldRow as any).world_id !== worldId) return;
+      
+      switch (eventType) {
+        case 'INSERT':
+          if (newRow) {
+            setArcs(prev => {
+              const exists = prev.find(a => a.id === newRow.id);
+              if (exists) return prev;
+              return [newRow as ArcRow, ...prev];
+            });
+          }
+          break;
+          
+        case 'UPDATE':
+          if (newRow) {
+            setArcs(prev => prev.map(a => a.id === newRow.id ? newRow as ArcRow : a));
+          }
+          break;
+          
+        case 'DELETE':
+          if (oldRow) {
+            setArcs(prev => {
+              const newArcs = prev.filter(a => a.id !== oldRow.id);
+              if (selectedArc?.id === oldRow.id) {
+                setSelectedArc(newArcs.length > 0 ? newArcs[0] : null);
+              }
+              return newArcs;
+            });
+          }
+          break;
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [worldId, selectedArc]);
+
+  const loadArcs = async () => {
+    if (!worldId) return;
+    try {
+      setIsLoading(true);
+      const data = await listArcs(worldId);
+      setArcs(data);
+      if (data.length > 0) {
+        setSelectedArc(data[0]);
+      }
+    } catch (error) {
+      console.error("Failed to load arcs:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handlers
+  const handleNew = useCallback(() => {
+    if (!worldId) return;
+    const newArc: ArcRow = {
+      id: `arc_${Date.now()}`,
+      world_id: worldId,
+      title: "New Story Arc",
+      stage: "setup",
+      goal: "",
+      progress: 0,
+      triggers: [],
+      beats: [],
+      pressure_vector: {},
+      owner: ""
+    };
+    setArcs(prev => [newArc, ...prev]);
+    setSelectedArc(newArc);
+    setHasChanges(true);
+  }, [worldId]);
+
+  const handleSave = useCallback(async () => {
+    if (!selectedArc || !hasChanges) return;
+    
+    try {
+      setIsLoading(true);
+      await upsertArc(selectedArc);
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Failed to save arc:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedArc, hasChanges]);
+
+  const handleDelete = useCallback(async () => {
+    if (!selectedArc) return;
+    if (!confirm(`Delete arc "${selectedArc.title}"? This cannot be undone.`)) return;
+    
+    try {
+      setIsLoading(true);
+      await deleteArc(selectedArc.id);
+      // State will be updated via realtime subscription
+    } catch (error) {
+      console.error("Failed to delete arc:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedArc]);
+
+  const handleRefresh = useCallback(() => {
+    if (worldId) {
+      loadArcs();
+    }
+  }, [worldId]);
+
+  const handleFilter = useCallback(() => {
+    setShowFilter(prev => !prev);
+  }, []);
+
+  const handleImport = useCallback(() => {
+    // TODO: Implement import logic
+    console.log("Import arcs - TODO");
+  }, []);
+
+  const handleExport = useCallback(() => {
+    // TODO: Implement export logic
+    console.log("Export arcs - TODO");
+  }, []);
+
+  // Action definitions
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: worldId ? "Create a new story arc" : "Select a world to create arcs",
+      kbd: "N",
+      onClick: handleNew,
+      disabled: !worldId,
+      variant: "primary"
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: selectedArc ? "Save current arc" : "Select an arc to save",
+      kbd: "Ctrl+S",
+      onClick: handleSave,
+      disabled: !selectedArc || !hasChanges
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: selectedArc ? "Delete selected arc" : "Select an arc to delete",
+      kbd: "Del",
+      onClick: handleDelete,
+      disabled: !selectedArc,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh arcs list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "filter",
+      label: "Filter",
+      tooltip: "Toggle filter panel",
+      kbd: "F",
+      onClick: handleFilter,
+      variant: showFilter ? "primary" : "ghost"
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import arcs from file",
+      onClick: handleImport
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: "Export arcs to file",
+      onClick: handleExport
+    }
+  ];
+
+  const filteredArcs = arcs.filter(arc =>
+    arc.title.toLowerCase().includes(query.toLowerCase()) ||
+    arc.id.toLowerCase().includes(query.toLowerCase()) ||
+    (arc.stage || '').toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      {/* ActionBar */}
+      <ActionBar
+        title="Story Arcs"
+        scope="arcs"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      {/* Filter Panel */}
+      {showFilter && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium mb-2">Filter Options</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Search</label>
+                <input 
+                  className="w-full rounded-md bg-slate-800 border border-slate-700 px-2 py-1 text-sm" 
+                  placeholder="Search by name, ID, or status..." 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="flex gap-4">
+        {/* Arcs List */}
+        <div className="w-80">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">Story Arcs</h3>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {filteredArcs.map((arc) => (
+                <div
+                  key={arc.id}
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                    selectedArc?.id === arc.id
+                      ? "bg-indigo-600/20 border-indigo-500"
+                      : "bg-slate-800 border-slate-700 hover:bg-slate-700"
+                  }`}
+                  onClick={() => setSelectedArc(arc)}
+                >
+                  <div className="font-medium">{arc.title}</div>
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <span className={`px-2 py-0.5 rounded text-xs ${
+                      arc.stage === 'active' ? 'bg-green-600' :
+                      arc.stage === 'paused' ? 'bg-yellow-600' :
+                      'bg-gray-600'
+                    }`}>
+                      {arc.stage || 'setup'}
+                    </span>
+                    <span>Progress: {arc.progress}%</span>
+                  </div>
+                </div>
+              ))}
+              {filteredArcs.length === 0 && !worldId && (
+                <div className="text-center text-slate-400 py-8">
+                  Select a world to manage story arcs
+                </div>
+              )}
+              {filteredArcs.length === 0 && worldId && (
+                <div className="text-center text-slate-400 py-8">
+                  No story arcs found. Create your first arc!
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        </div>
+
+        {/* Arc Details */}
+        <div className="flex-1">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">Arc Details</h3>
+            {selectedArc ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={selectedArc.title}
+                    onChange={(e) => {
+                      setSelectedArc({ ...selectedArc, title: e.target.value });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Goal</label>
+                  <textarea
+                    value={selectedArc.goal || ""}
+                    onChange={(e) => {
+                      setSelectedArc({ ...selectedArc, goal: e.target.value });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    rows={3}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Stage</label>
+                    <select
+                      value={selectedArc.stage || "setup"}
+                      onChange={(e) => {
+                        setSelectedArc({ ...selectedArc, stage: e.target.value });
+                        setHasChanges(true);
+                      }}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    >
+                      <option value="setup">Setup</option>
+                      <option value="active">Active</option>
+                      <option value="climax">Climax</option>
+                      <option value="resolution">Resolution</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Owner</label>
+                    <input
+                      type="text"
+                      value={selectedArc.owner || ""}
+                      onChange={(e) => {
+                        setSelectedArc({ ...selectedArc, owner: e.target.value });
+                        setHasChanges(true);
+                      }}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                      placeholder="Character or faction"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Progress</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={selectedArc.progress}
+                    onChange={(e) => {
+                      setSelectedArc({ ...selectedArc, progress: parseInt(e.target.value) });
+                      setHasChanges(true);
+                    }}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-slate-400 text-center">{selectedArc.progress}%</div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-slate-400 py-8">
+                Select a story arc to view details
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/managers/EntitiesManager.tsx
+================
+import React, { useState, useRef, useCallback, memo } from "react";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { ChevronUp, ChevronDown } from "lucide-react";
+import { download } from "../utils/validation";
+import { useEntityManager } from "../../hooks/useEntityManager";
+import { useWorld } from "../../context/WorldContext";
+import ActionBar, { type ActionDef } from "../ui/ActionBar";
+
+interface EntitiesManagerProps {
+  worldId?: string;
+}
+
+// Memoized entity list item
+const EntityListItem = memo(({ 
+  entity, 
+  index, 
+  isSelected, 
+  onClick 
+}: { 
+  entity: any; 
+  index: number; 
+  isSelected: boolean; 
+  onClick: () => void; 
+}) => (
+  <div 
+    onClick={onClick} 
+    className={`p-2 rounded-lg border cursor-pointer transition ${
+      isSelected 
+        ? 'border-indigo-500/70 bg-indigo-500/10 ring-1 ring-indigo-500/30' 
+        : 'border-slate-800 hover:bg-slate-800/40'
+    }`}
+  >
+    <div className="text-sm font-medium">{entity.name || entity.id}</div>
+    <div className="text-xs opacity-70">{entity.id}</div>
+  </div>
+));
+
+EntityListItem.displayName = 'EntityListItem';
+
+
+// Memoized form field
+const FormField = memo(({ 
+  label, 
+  value, 
+  onChange, 
+  disabled, 
+  type = "text",
+  className = "" 
+}: {
+  label: string;
+  value: any;
+  onChange: (value: any) => void;
+  disabled: boolean;
+  type?: string;
+  className?: string;
+}) => (
+  <label className={`text-xs opacity-80 ${className}`}>
+    {label}
+    <input 
+      className="w-full p-1 rounded bg-slate-900 border border-slate-700" 
+      type={type}
+      value={value} 
+      onChange={(e) => onChange(type === "number" ? Number(e.target.value) : e.target.value)}
+      disabled={disabled}
+    />
+  </label>
+));
+
+FormField.displayName = 'FormField';
+
+export default function EntitiesManager({ worldId: propWorldId }: EntitiesManagerProps) {
+  const { worldId: contextWorldId } = useWorld();
+  const worldId = propWorldId || contextWorldId;
+  
+  const {
+    filteredEntities,
+    currentEntity,
+    selected,
+    setSelected,
+    query,
+    setQuery,
+    isLoading,
+    updateEntity,
+    updateNestedEntity,
+    saveEntity,
+    deleteCurrentEntity,
+    addNewEntity,
+    duplicateEntity
+  } = useEntityManager(worldId);
+
+  const [showRawJson, setShowRawJson] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+
+  const handleSaveAll = useCallback(async () => {
+    // Implementation for save all
+    console.log("Save all entities");
+  }, []);
+
+  const handleDownloadCollection = useCallback(() => {
+    download("entities.json", filteredEntities.map(f => f.entity));
+  }, [filteredEntities]);
+
+  const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    file.text().then((text) => {
+      try {
+        const obj = JSON.parse(text);
+        if (Array.isArray(obj)) {
+          // Handle import logic
+          console.log("Import entities:", obj);
+        } else if (obj && typeof obj === "object") {
+          console.log("Import single entity:", obj);
+        }
+      } catch (err) {
+        console.error('Invalid JSON file:', err);
+      }
+    });
+  }, []);
+
+  const tagString = currentEntity?.tags?.join(", ") || "";
+
+  const handleTagsChange = useCallback((newTagString: string) => {
+    const tags = newTagString.split(',').map(s => s.trim()).filter(Boolean);
+    updateEntity({ tags });
+  }, [updateEntity]);
+
+  // Additional handlers for ActionBar
+  const handleRefresh = useCallback(() => {
+    // TODO: Add refresh logic
+    console.log("Refresh entities - TODO");
+  }, []);
+
+  const handleImportClick = useCallback(() => {
+    fileRef.current?.click();
+  }, []);
+
+  const handleFilter = useCallback(() => {
+    setShowFilter(prev => !prev);
+  }, []);
+
+  // Action definitions for ActionBar
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: worldId ? "Create a new entity" : "Select a world to create entities",
+      kbd: "N",
+      onClick: addNewEntity,
+      disabled: !worldId,
+      variant: "primary"
+    },
+    {
+      id: "duplicate",
+      label: "Duplicate",
+      tooltip: currentEntity ? "Duplicate selected entity" : "Select an entity to duplicate",
+      onClick: duplicateEntity,
+      disabled: !currentEntity
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: currentEntity ? "Save current entity" : "Select an entity to save",
+      kbd: "Ctrl+S",
+      onClick: saveEntity,
+      disabled: !currentEntity
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: currentEntity ? "Delete selected entity" : "Select an entity to delete",
+      kbd: "Del",
+      onClick: deleteCurrentEntity,
+      disabled: !currentEntity,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh entities list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "filter",
+      label: "Filter",
+      tooltip: "Toggle filter panel",
+      kbd: "F",
+      onClick: handleFilter,
+      variant: showFilter ? "primary" : "ghost"
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import entities from file",
+      onClick: handleImportClick
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: "Export entities to file",
+      onClick: handleDownloadCollection
+    }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-sm opacity-70">Loading entities...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* ActionBar */}
+      <ActionBar
+        title="Entities"
+        scope="entities"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      {/* Filter Panel */}
+      {showFilter && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium mb-2">Filter Options</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Search</label>
+                <input 
+                  className="w-full rounded-md bg-slate-800 border border-slate-700 px-2 py-1 text-sm" 
+                  placeholder="Search by name, id, tag..." 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Hidden file input */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+        onChange={handleImport}
+      />
+
+      <div className="flex gap-4">
+        {/* Sidebar list */}
+        <div className="w-80">
+          <Card>
+            <CardContent className="p-4 space-y-3">
+            
+            <div className="grid gap-2 max-h-[420px] overflow-auto">
+              {filteredEntities.map(({ entity, index }) => (
+                <EntityListItem
+                  key={entity.id}
+                  entity={entity}
+                  index={index}
+                  isSelected={index === selected}
+                  onClick={() => setSelected(index)}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detail editor */}
+      <div className="flex-1">
+        {currentEntity ? (
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-end gap-2">
+                <Button variant="secondary" onClick={saveEntity}>Save Current</Button>
+                <Button variant="secondary" onClick={handleSaveAll}>Save All</Button>
+                <Button variant="secondary" onClick={() => download(currentEntity.id + '.json', currentEntity)}>
+                  Download
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <FormField
+                  label="ID"
+                  value={currentEntity.id}
+                  onChange={(value) => updateEntity({ id: value })}
+                  disabled={!isEditMode}
+                />
+                <FormField
+                  label="Name"
+                  value={currentEntity.name}
+                  onChange={(value) => updateEntity({ name: value })}
+                  disabled={!isEditMode}
+                />
+                <FormField
+                  label="Tags (comma-separated)"
+                  value={tagString}
+                  onChange={handleTagsChange}
+                  disabled={!isEditMode}
+                  className="col-span-2"
+                />
+              </div>
+
+              <div className="grid grid-cols-6 gap-2">
+                {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(stat => (
+                  <FormField
+                    key={stat}
+                    label={stat.toUpperCase()}
+                    value={currentEntity.srd?.stats?.[stat] || 10}
+                    onChange={(value) => updateNestedEntity(['srd', 'stats', stat], value)}
+                    disabled={!isEditMode}
+                    type="number"
+                  />
+                ))}
+              </div>
+
+              <div className="grid grid-cols-4 gap-2">
+                <FormField
+                  label="HP"
+                  value={currentEntity.srd?.hp || 10}
+                  onChange={(value) => updateNestedEntity(['srd', 'hp'], value)}
+                  disabled={!isEditMode}
+                  type="number"
+                />
+                <FormField
+                  label="AC"
+                  value={currentEntity.srd?.ac || 10}
+                  onChange={(value) => updateNestedEntity(['srd', 'ac'], value)}
+                  disabled={!isEditMode}
+                  type="number"
+                />
+                <FormField
+                  label="Faction"
+                  value={currentEntity.status?.faction || ""}
+                  onChange={(value) => updateNestedEntity(['status', 'faction'], value)}
+                  disabled={!isEditMode}
+                />
+                <FormField
+                  label="Location"
+                  value={currentEntity.status?.location || ""}
+                  onChange={(value) => updateNestedEntity(['status', 'location'], value)}
+                  disabled={!isEditMode}
+                />
+              </div>
+
+              <div>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowRawJson(!showRawJson)}
+                  className="w-full flex justify-between items-center"
+                >
+                  <span className="text-xs opacity-80">Advanced (Raw JSON)</span>
+                  {showRawJson ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                {showRawJson && (
+                  <Textarea 
+                    className="font-mono text-xs min-h-[160px] mt-2" 
+                    value={JSON.stringify(currentEntity, null, 2)} 
+                    onChange={(e) => {
+                      try { 
+                        const obj = JSON.parse(e.target.value); 
+                        updateEntity(obj);
+                      } catch (err: any) { 
+                        console.error('JSON parse error:', err.message); 
+                      }
+                    }} 
+                    disabled={!isEditMode}
+                  />
+                )}
+              </div>
+
+              
+              <input 
+                type="file" 
+                accept="application/json" 
+                className="hidden" 
+                ref={fileRef} 
+                onChange={handleImport} 
+              />
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="opacity-70 text-sm p-4">No entity selected.</div>
+        )}
+      </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/managers/FactionsManager.tsx
+================
+import React, { useState, useCallback, useEffect } from "react";
+import { Card, CardContent } from "../ui/card";
+import ActionBar, { type ActionDef } from "../ui/ActionBar";
+import { useWorld } from "../../context/WorldContext";
+import { listFactions, upsertFaction, deleteFaction, onFactionsChange, type FactionRow } from "@/lib/factions";
+
+export default function FactionsManager() {
+  const { worldId } = useWorld();
+  const [factions, setFactions] = useState<FactionRow[]>([]);
+  const [selectedFaction, setSelectedFaction] = useState<FactionRow | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [query, setQuery] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Load factions on world change
+  useEffect(() => {
+    if (!worldId) {
+      setFactions([]);
+      setSelectedFaction(null);
+      return;
+    }
+    loadFactions();
+  }, [worldId]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!worldId) return;
+    
+    const subscription = onFactionsChange((payload) => {
+      const { eventType, new: newRow, old: oldRow } = payload;
+      
+      // Only handle events for the current world
+      if (newRow && (newRow as any).world_id !== worldId) return;
+      if (oldRow && (oldRow as any).world_id !== worldId) return;
+      
+      switch (eventType) {
+        case 'INSERT':
+          if (newRow) {
+            setFactions(prev => {
+              const exists = prev.find(f => f.id === newRow.id);
+              if (exists) return prev;
+              return [newRow as FactionRow, ...prev];
+            });
+          }
+          break;
+          
+        case 'UPDATE':
+          if (newRow) {
+            setFactions(prev => prev.map(f => f.id === newRow.id ? newRow as FactionRow : f));
+          }
+          break;
+          
+        case 'DELETE':
+          if (oldRow) {
+            setFactions(prev => {
+              const newFactions = prev.filter(f => f.id !== oldRow.id);
+              if (selectedFaction?.id === oldRow.id) {
+                setSelectedFaction(newFactions.length > 0 ? newFactions[0] : null);
+              }
+              return newFactions;
+            });
+          }
+          break;
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [worldId, selectedFaction]);
+
+  const loadFactions = async () => {
+    if (!worldId) return;
+    try {
+      setIsLoading(true);
+      const data = await listFactions(worldId);
+      setFactions(data);
+      if (data.length > 0) {
+        setSelectedFaction(data[0]);
+      }
+    } catch (error) {
+      console.error("Failed to load factions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handlers
+  const handleNew = useCallback(() => {
+    if (!worldId) return;
+    const newFaction: FactionRow = {
+      id: `faction_${Date.now()}`,
+      world_id: worldId,
+      name: "New Faction",
+      tags: [],
+      ideology: "",
+      goals: [],
+      pressure: 0,
+      stability: 50,
+      resources: {},
+      relations: {},
+      leaders: []
+    };
+    setFactions(prev => [newFaction, ...prev]);
+    setSelectedFaction(newFaction);
+    setHasChanges(true);
+  }, [worldId]);
+
+  const handleSave = useCallback(async () => {
+    if (!selectedFaction || !hasChanges) return;
+    
+    try {
+      setIsLoading(true);
+      await upsertFaction(selectedFaction);
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Failed to save faction:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedFaction, hasChanges]);
+
+  const handleDelete = useCallback(async () => {
+    if (!selectedFaction) return;
+    if (!confirm(`Delete faction "${selectedFaction.name}"? This cannot be undone.`)) return;
+    
+    try {
+      setIsLoading(true);
+      await deleteFaction(selectedFaction.id);
+      // State will be updated via realtime subscription
+    } catch (error) {
+      console.error("Failed to delete faction:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedFaction]);
+
+  const handleRefresh = useCallback(() => {
+    if (worldId) {
+      loadFactions();
+    }
+  }, [worldId]);
+
+  const handleFilter = useCallback(() => {
+    setShowFilter(prev => !prev);
+  }, []);
+
+  const handleImport = useCallback(() => {
+    // TODO: Implement import logic
+    console.log("Import factions - TODO");
+  }, []);
+
+  const handleExport = useCallback(() => {
+    // TODO: Implement export logic
+    console.log("Export factions - TODO");
+  }, []);
+
+  // Action definitions
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: worldId ? "Create a new faction" : "Select a world to create factions",
+      kbd: "N",
+      onClick: handleNew,
+      disabled: !worldId,
+      variant: "primary"
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: selectedFaction ? "Save current faction" : "Select a faction to save",
+      kbd: "Ctrl+S",
+      onClick: handleSave,
+      disabled: !selectedFaction || !hasChanges
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: selectedFaction ? "Delete selected faction" : "Select a faction to delete",
+      kbd: "Del",
+      onClick: handleDelete,
+      disabled: !selectedFaction,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh factions list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "filter",
+      label: "Filter",
+      tooltip: "Toggle filter panel",
+      kbd: "F",
+      onClick: handleFilter,
+      variant: showFilter ? "primary" : "ghost"
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import factions from file",
+      onClick: handleImport
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: "Export factions to file",
+      onClick: handleExport
+    }
+  ];
+
+  const filteredFactions = factions.filter(faction =>
+    faction.name.toLowerCase().includes(query.toLowerCase()) ||
+    faction.id.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      {/* ActionBar */}
+      <ActionBar
+        title="Factions"
+        scope="factions"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      {/* Filter Panel */}
+      {showFilter && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium mb-2">Filter Options</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Search</label>
+                <input 
+                  className="w-full rounded-md bg-slate-800 border border-slate-700 px-2 py-1 text-sm" 
+                  placeholder="Search by name or ID..." 
+                  value={query} 
+                  onChange={(e) => setQuery(e.target.value)} 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="flex gap-4">
+        {/* Factions List */}
+        <div className="w-80">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">Factions</h3>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {filteredFactions.map((faction) => (
+                <div
+                  key={faction.id}
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                    selectedFaction?.id === faction.id
+                      ? "bg-indigo-600/20 border-indigo-500"
+                      : "bg-slate-800 border-slate-700 hover:bg-slate-700"
+                  }`}
+                  onClick={() => setSelectedFaction(faction)}
+                >
+                  <div className="font-medium">{faction.name}</div>
+                  <div className="text-sm text-slate-400">Stability: {faction.stability}%</div>
+                </div>
+              ))}
+              {filteredFactions.length === 0 && !worldId && (
+                <div className="text-center text-slate-400 py-8">
+                  Select a world to manage factions
+                </div>
+              )}
+              {filteredFactions.length === 0 && worldId && (
+                <div className="text-center text-slate-400 py-8">
+                  No factions found. Create your first faction!
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        </div>
+
+        {/* Faction Details */}
+        <div className="flex-1">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">Faction Details</h3>
+            {selectedFaction ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={selectedFaction.name}
+                    onChange={(e) => {
+                      setSelectedFaction({ ...selectedFaction, name: e.target.value });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Ideology</label>
+                  <textarea
+                    value={selectedFaction.ideology || ""}
+                    onChange={(e) => {
+                      setSelectedFaction({ ...selectedFaction, ideology: e.target.value });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    rows={2}
+                    placeholder="Core beliefs and values"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Stability</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={selectedFaction.stability}
+                      onChange={(e) => {
+                        setSelectedFaction({ ...selectedFaction, stability: parseInt(e.target.value) });
+                        setHasChanges(true);
+                      }}
+                      className="w-full"
+                    />
+                    <div className="text-sm text-slate-400 text-center">{selectedFaction.stability}%</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Pressure</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={selectedFaction.pressure}
+                      onChange={(e) => {
+                        setSelectedFaction({ ...selectedFaction, pressure: parseInt(e.target.value) });
+                        setHasChanges(true);
+                      }}
+                      className="w-full"
+                    />
+                    <div className="text-sm text-slate-400 text-center">{selectedFaction.pressure}%</div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Tags (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={selectedFaction.tags?.join(", ") || ""}
+                    onChange={(e) => {
+                      const tags = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                      setSelectedFaction({ ...selectedFaction, tags });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    placeholder="political, military, religious"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-slate-400 py-8">
+                Select a faction to view details
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/managers/WorldsManager.tsx
+================
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, CardContent } from "../ui/card";
+import ActionBar, { type ActionDef } from "../ui/ActionBar";
+import { useWorld } from "../../context/WorldContext";
+import { listWorlds, createWorld, upsertWorld, deleteWorld, advanceWorldTick, onWorldsChange, type WorldRow } from "@/lib/worlds";
+
+export default function WorldsManager() {
+  const { worldId, setWorldId } = useWorld();
+  const [worlds, setWorlds] = useState<WorldRow[]>([]);
+  const [selectedWorld, setSelectedWorld] = useState<WorldRow | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Load worlds
+  useEffect(() => {
+    loadWorlds();
+    
+    // Subscribe to realtime changes
+    const subscription = onWorldsChange((payload) => {
+      if (payload.eventType === 'INSERT' && payload.new) {
+        setWorlds(prev => [payload.new as WorldRow, ...prev]);
+      } else if (payload.eventType === 'UPDATE' && payload.new) {
+        setWorlds(prev => prev.map(w => w.id === payload.new.id ? payload.new as WorldRow : w));
+      } else if (payload.eventType === 'DELETE' && payload.old) {
+        setWorlds(prev => prev.filter(w => w.id !== payload.old.id));
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Update selected world when worldId changes
+  useEffect(() => {
+    if (worldId) {
+      const world = worlds.find(w => w.id === worldId);
+      setSelectedWorld(world || null);
+    } else {
+      setSelectedWorld(null);
+    }
+  }, [worldId, worlds]);
+
+  const loadWorlds = async () => {
+    try {
+      setIsLoading(true);
+      const data = await listWorlds();
+      setWorlds(data);
+    } catch (error) {
+      console.error("Failed to load worlds:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleNewWorld = useCallback(async () => {
+    const name = window.prompt("Name your world:");
+    if (!name?.trim()) return;
+    
+    try {
+      const newWorld = await createWorld(name.trim(), {
+        time: `Day ${worlds.length + 1}, 12:00`,
+        weather: "clear",
+        tension: 0,
+        locations: []
+      });
+      setWorldId(newWorld.id);
+    } catch (error) {
+      console.error("Failed to create world:", error);
+    }
+  }, [worlds.length, setWorldId]);
+
+  const handleSave = useCallback(async () => {
+    if (!selectedWorld || !hasChanges) return;
+    
+    try {
+      setIsLoading(true);
+      await upsertWorld(selectedWorld);
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Failed to save world:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedWorld, hasChanges]);
+
+  const handleDelete = useCallback(async () => {
+    if (!selectedWorld) return;
+    
+    if (!confirm(`Delete world "${selectedWorld.id.slice(0, 8)}"? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await deleteWorld(selectedWorld.id);
+      if (worldId === selectedWorld.id) {
+        setWorldId(null);
+      }
+    } catch (error) {
+      console.error("Failed to delete world:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedWorld, worldId, setWorldId]);
+
+  const handleRefresh = useCallback(() => {
+    loadWorlds();
+  }, []);
+
+  const handleAdvanceTick = useCallback(async () => {
+    if (!worldId) return;
+    
+    try {
+      setIsLoading(true);
+      await advanceWorldTick(worldId, 1);
+    } catch (error) {
+      console.error("Failed to advance world tick:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [worldId]);
+
+  const handleExport = useCallback(() => {
+    if (!selectedWorld) return;
+    const blob = new Blob([JSON.stringify(selectedWorld, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `world-${selectedWorld.id.slice(0, 8)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [selectedWorld]);
+
+  const handleImport = useCallback(() => {
+    // TODO: Implement import functionality
+    console.log("Import worlds - TODO");
+  }, []);
+
+  // Action definitions
+  const actions: ActionDef[] = [
+    {
+      id: "new",
+      label: "New",
+      tooltip: "Create a new world",
+      kbd: "N",
+      onClick: handleNewWorld,
+      variant: "primary"
+    },
+    {
+      id: "save",
+      label: "Save",
+      tooltip: "Save current world",
+      kbd: "Ctrl+S",
+      onClick: handleSave,
+      disabled: !selectedWorld || !hasChanges
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      tooltip: selectedWorld ? "Delete selected world" : "Select a world to delete",
+      kbd: "Del",
+      onClick: handleDelete,
+      disabled: !selectedWorld,
+      variant: "danger"
+    }
+  ];
+
+  const extraActions: ActionDef[] = [
+    {
+      id: "refresh",
+      label: "Refresh",
+      tooltip: "Refresh worlds list",
+      kbd: "R",
+      onClick: handleRefresh
+    },
+    {
+      id: "advanceTick",
+      label: "Advance Tick",
+      tooltip: worldId ? "Advance world simulation" : "Select a world to advance",
+      onClick: handleAdvanceTick,
+      disabled: !worldId
+    },
+    {
+      id: "export",
+      label: "Export",
+      tooltip: selectedWorld ? "Export selected world" : "Select a world to export",
+      onClick: handleExport,
+      disabled: !selectedWorld
+    },
+    {
+      id: "import",
+      label: "Import",
+      tooltip: "Import worlds",
+      onClick: handleImport
+    }
+  ];
+
+  return (
+    <div className="space-y-4">
+      <ActionBar
+        title="Worlds"
+        scope="worlds"
+        actions={actions}
+        extraActions={extraActions}
+        busy={isLoading}
+      />
+
+      <div className="flex gap-4">
+        {/* Worlds List */}
+        <div className="w-80">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">Available Worlds</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {worlds.map((world) => (
+                <div
+                  key={world.id}
+                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                    worldId === world.id
+                      ? "bg-indigo-600/20 border-indigo-500"
+                      : "bg-slate-800 border-slate-700 hover:bg-slate-700"
+                  }`}
+                  onClick={() => setWorldId(world.id)}
+                >
+                  <div className="font-medium">World {world.id.slice(0, 8)}</div>
+                  <div className="text-sm text-slate-400 mt-1">{world.time} • {world.weather}</div>
+                </div>
+              ))}
+              {worlds.length === 0 && (
+                <div className="text-center text-slate-400 py-8">
+                  No worlds found. Create your first world!
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        </div>
+
+        {/* World Details */}
+        <div className="flex-1">
+          <Card>
+          <CardContent className="p-4">
+            <h3 className="text-md font-medium mb-3">World Details</h3>
+            {selectedWorld ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">ID</label>
+                  <input
+                    type="text"
+                    value={selectedWorld.id}
+                    readOnly
+                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Time</label>
+                  <input
+                    type="text"
+                    value={selectedWorld.time || ""}
+                    onChange={(e) => {
+                      setSelectedWorld({ ...selectedWorld, time: e.target.value });
+                      setHasChanges(true);
+                    }}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Tension</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={selectedWorld.tension || 0}
+                      onChange={(e) => {
+                        setSelectedWorld({ ...selectedWorld, tension: parseInt(e.target.value) });
+                        setHasChanges(true);
+                      }}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Weather</label>
+                    <select
+                      value={selectedWorld.weather || "clear"}
+                      onChange={(e) => {
+                        setSelectedWorld({ ...selectedWorld, weather: e.target.value });
+                        setHasChanges(true);
+                      }}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg"
+                    >
+                      <option value="clear">Clear</option>
+                      <option value="cloudy">Cloudy</option>
+                      <option value="rainy">Rainy</option>
+                      <option value="stormy">Stormy</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-slate-400 py-8">
+                Select a world to view details
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/ui/ActionBar.tsx
+================
+import React, { useEffect } from "react";
+import { 
+  Plus, Copy, Save, CheckCircle2, Trash2, RotateCw, 
+  Filter, Upload, Download, FastForward, Loader2 
+} from "lucide-react";
+
+export type ActionId =
+  | "new" | "duplicate" | "save" | "validate" | "delete"
+  | "refresh" | "filter" | "import" | "export" | "advanceTick";
+
+export type ActionDef = {
+  id: ActionId;
+  label: string;
+  tooltip?: string;
+  kbd?: string;             // e.g., "N", "Ctrl+S"
+  onClick: () => void | Promise<void>;
+  disabled?: boolean;
+  variant?: "primary" | "ghost" | "danger";
+  icon?: React.ComponentType<{ className?: string }>;
+};
+
+export type ActionBarProps = {
+  title: string;            // e.g., "Entities", "Events"
+  scope: "worlds" | "entities" | "factions" | "arcs" | "events";
+  actions: ActionDef[];     // left-aligned core actions: New, Save, Delete, etc.
+  extraActions?: ActionDef[]; // right-aligned optional actions
+  busy?: boolean;           // show spinner overlay on bar when true
+  compact?: boolean;        // optional compact mode
+};
+
+// Icon mapping for consistent icons across actions
+const ACTION_ICONS: Record<ActionId, React.ComponentType<{ className?: string }>> = {
+  new: Plus,
+  duplicate: Copy,
+  save: Save,
+  validate: CheckCircle2,
+  delete: Trash2,
+  refresh: RotateCw,
+  filter: Filter,
+  import: Upload,
+  export: Download,
+  advanceTick: FastForward,
+};
+
+// Hook for keyboard shortcuts
+function useKeyboardShortcuts(actions: ActionDef[], extraActions: ActionDef[] = []) {
+  useEffect(() => {
+    const allActions = [...actions, ...extraActions];
+    
+    const handleKeydown = (event: KeyboardEvent) => {
+      // Don't handle shortcuts if user is typing in an input
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement ||
+        (event.target as any)?.isContentEditable
+      ) {
+        return;
+      }
+
+      for (const action of allActions) {
+        if (!action.kbd || action.disabled) continue;
+
+        const kbd = action.kbd.toLowerCase();
+        const isCtrlCmd = event.metaKey || event.ctrlKey;
+        const key = event.key.toLowerCase();
+
+        let shouldTrigger = false;
+
+        if (kbd === "n" && key === "n" && !isCtrlCmd) {
+          shouldTrigger = true;
+        } else if (kbd === "ctrl+s" && key === "s" && isCtrlCmd) {
+          shouldTrigger = true;
+          event.preventDefault(); // Prevent browser save
+        } else if (kbd === "del" && (key === "delete" || key === "del")) {
+          shouldTrigger = true;
+        } else if (kbd === "r" && key === "r" && !isCtrlCmd) {
+          shouldTrigger = true;
+        } else if (kbd === "v" && key === "v" && !isCtrlCmd) {
+          shouldTrigger = true;
+        } else if (kbd === "f" && key === "f" && !isCtrlCmd) {
+          shouldTrigger = true;
+        }
+
+        if (shouldTrigger) {
+          event.preventDefault();
+          action.onClick();
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [actions, extraActions]);
+}
+
+// Action button component
+function ActionButton({ 
+  action, 
+  compact = false 
+}: { 
+  action: ActionDef; 
+  compact?: boolean; 
+}) {
+  const Icon = action.icon || ACTION_ICONS[action.id];
+  
+  const baseClasses = `
+    inline-flex items-center gap-2 rounded-xl border border-slate-700
+    focus:outline-none focus:ring-2 focus:ring-indigo-500
+    disabled:opacity-50 disabled:cursor-not-allowed
+    transition-colors duration-150
+    ${compact ? "px-2 py-1" : "px-3 py-1.5"}
+  `.trim();
+
+  const variantClasses = {
+    primary: "bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500",
+    danger: "bg-rose-600 hover:bg-rose-500 text-white border-rose-500", 
+    ghost: "bg-slate-800 hover:bg-slate-700 text-slate-200"
+  };
+
+  const variant = action.variant || "ghost";
+  const className = `${baseClasses} ${variantClasses[variant]}`;
+
+  const tooltipText = action.tooltip || action.label;
+  const fullTooltip = action.kbd ? `${tooltipText} (${action.kbd})` : tooltipText;
+
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={action.onClick}
+      disabled={action.disabled}
+      aria-label={action.label}
+      title={fullTooltip}
+      aria-disabled={action.disabled}
+    >
+      {Icon && <Icon className="h-4 w-4" />}
+      <span className="text-sm font-medium">{action.label}</span>
+      {action.kbd && (
+        <span className="text-xs text-slate-400 bg-slate-700 px-1 rounded">
+          {action.kbd}
+        </span>
+      )}
+    </button>
+  );
+}
+
+export default function ActionBar({
+  title,
+  scope,
+  actions,
+  extraActions = [],
+  busy = false,
+  compact = false
+}: ActionBarProps) {
+  useKeyboardShortcuts(actions, extraActions);
+
+  return (
+    <div className="relative">
+      {/* Busy overlay */}
+      {busy && (
+        <div className="absolute inset-0 bg-slate-900/50 rounded-xl flex items-center justify-center z-10">
+          <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+        </div>
+      )}
+      
+      <div className={`
+        flex items-center justify-between p-4 bg-slate-900/50 rounded-xl 
+        border border-slate-700 shadow-sm ${compact ? "p-3" : "p-4"}
+      `}>
+        {/* Left side: Title + Core Actions */}
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-slate-200">{title}</h2>
+          <div className="flex items-center gap-2">
+            {actions.map((action) => (
+              <ActionButton 
+                key={action.id} 
+                action={action} 
+                compact={compact} 
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right side: Extra Actions */}
+        {extraActions.length > 0 && (
+          <div className="flex items-center gap-2">
+            {extraActions.map((action) => (
+              <ActionButton 
+                key={action.id} 
+                action={action} 
+                compact={compact} 
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/components/ui/button.tsx
+================
+import React from 'react'
+
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' }
+
+export const Button: React.FC<Props> = ({ variant='primary', style, ...props }) => {
+  const base: React.CSSProperties = {
+    background: variant === 'primary' ? 'var(--accent)' : 'transparent',
+    color: variant === 'primary' ? 'white' : 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 12px',
+    borderRadius: 10,
+    cursor: 'pointer'
+  }
+  return <button {...props} style={{ ...base, ...style }} />
+}
+
+================
+File: src/components/ui/card.tsx
+================
+import React from 'react'
+
+export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = {
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
+    borderRadius: 12,
+  }
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>
+}
+
+export const CardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = {
+    padding: 16
+  }
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>
+}
+
+================
+File: src/components/ui/input.tsx
+================
+import React from 'react'
+
+export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => {
+  const style: React.CSSProperties = {
+    background: 'var(--card)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 10px',
+    borderRadius: 8
+  }
+  return <input {...props} style={{ ...style, ...(props.style||{}) }} />
+}
+
+================
+File: src/components/ui/tabs.tsx
+================
+import React from 'react'
+
+type TabsProps = { defaultValue: string, children: React.ReactNode, className?: string }
+type TabsContext = { value: string, setValue: (v: string) => void }
+const Ctx = React.createContext<TabsContext | null>(null)
+
+export const Tabs: React.FC<TabsProps> = ({ defaultValue, children }) => {
+  const [value, setValue] = React.useState(defaultValue)
+  return <Ctx.Provider value={{ value, setValue }}>{children}</Ctx.Provider>
+}
+
+export const TabsList: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, ...props }) => {
+  const base: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))',
+    gap: 8,
+    marginBottom: 12
+  };
+  return <div {...props} style={{ ...base, ...style }}>{children}</div>;
+};
+
+export const TabsTrigger: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }> = ({ value, children }) => {
+  const ctx = React.useContext(Ctx)!
+  const active = ctx.value === value
+  return <button onClick={() => ctx.setValue(value)} style={{ padding:'8px 10px', borderRadius:8, border:'1px solid var(--border)', background: active ? 'var(--accent)' : 'transparent', color: active ? 'white' : 'var(--text)', cursor:'pointer' }}>{children}</button>
+}
+
+export const TabsContent: React.FC<{ value: string, children: React.ReactNode }> = ({ value, children }) => {
+  const ctx = React.useContext(Ctx)!
+  if (ctx.value !== value) return null
+  return <div>{children}</div>
+}
+
+================
+File: src/components/ui/textarea.tsx
+================
+import React from 'react'
+
+export const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => {
+  const style: React.CSSProperties = {
+    background: 'var(--card)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '8px 10px',
+    borderRadius: 8,
+    minHeight: 320,
+    width: '100%'
+  }
+  return <textarea {...props} style={{ ...style, ...(props.style||{}) }} />
+}
+
+================
+File: src/components/utils/validation.ts
+================
+import { useRef, useState, useCallback } from "react";
+
+// Lazy load validation dependencies
+let ajvInstance: any = null;
+let validators: Record<string, any> = {};
+
+async function getAjv() {
+  if (!ajvInstance) {
+    const [Ajv2020, addFormats] = await Promise.all([
+      import("ajv/dist/2020"),
+      import("ajv-formats")
+    ]);
+    
+    ajvInstance = new Ajv2020.default({ allErrors: true, strict: false });
+    addFormats.default(ajvInstance);
+  }
+  return ajvInstance;
+}
+
+// Minimal schema definitions (loaded on demand)
+const schemas = {
+  entity: () => ({
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $id: "schema/entity.json",
+    title: "Entity",
+    type: "object",
+    required: ["id", "name", "tags", "srd"],
+    properties: {
+      id: { type: "string" },
+      name: { type: "string" },
+      tags: { type: "array", items: { type: "string" } },
+      srd: {
+        type: "object",
+        properties: {
+          level: { type: "integer" },
+          ancestry: { type: "string" },
+          role: { type: "string" },
+          stats: {
+            type: "object",
+            properties: {
+              str: { type: "integer" },
+              dex: { type: "integer" },
+              con: { type: "integer" },
+              int: { type: "integer" },
+              wis: { type: "integer" },
+              cha: { type: "integer" }
+            }
+          },
+          hp: { type: "integer" },
+          ac: { type: "integer" }
+        }
+      }
+    }
+  }),
+  
+  faction: () => ({
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $id: "schema/faction.json",
+    title: "Faction",
+    type: "object",
+    required: ["id", "name"],
+    properties: {
+      id: { type: "string" },
+      name: { type: "string" },
+      tags: { type: "array", items: { type: "string" } },
+      goals: { type: "array", items: { type: "string" } },
+      pressure: { type: "number", minimum: 0, maximum: 1 },
+      stability: { type: "number", minimum: 0, maximum: 1 }
+    }
+  })
+};
+
+async function getValidator(schemaType: keyof typeof schemas) {
+  if (!validators[schemaType]) {
+    const ajv = await getAjv();
+    const schema = schemas[schemaType]();
+    validators[schemaType] = ajv.compile(schema);
+  }
+  return validators[schemaType];
+}
+
+export async function validateEntity(data: any): Promise<{ isValid: boolean; errors: string[] }> {
+  try {
+    const validator = await getValidator('entity');
+    const isValid = validator(data);
+    const errors = validator.errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || [];
+    return { isValid, errors };
+  } catch (error) {
+    return { isValid: false, errors: ['Validation failed'] };
+  }
+}
+
+export async function validateFaction(data: any): Promise<{ isValid: boolean; errors: string[] }> {
+  try {
+    const validator = await getValidator('faction');
+    const isValid = validator(data);
+    const errors = validator.errors?.map((e: any) => `${e.instancePath || "/"} ${e.message}`) || [];
+    return { isValid, errors };
+  } catch (error) {
+    return { isValid: false, errors: ['Validation failed'] };
+  }
+}
+
+export function download(filename: string, data: object) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export function useAsyncValidation<T>(
+  initial: T, 
+  validateFn: (data: any) => Promise<{ isValid: boolean; errors: string[] }>
+) {
+  const [data, setData] = useState<T>(initial);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
+
+  const validate = useCallback(async (value?: T) => {
+    const dataToValidate = value !== undefined ? value : data;
+    setIsValidating(true);
+    
+    try {
+      const result = await validateFn(dataToValidate);
+      setErrors(result.errors);
+      return result.isValid;
+    } catch (error) {
+      setErrors(['Validation error occurred']);
+      return false;
+    } finally {
+      setIsValidating(false);
+    }
+  }, [data, validateFn]);
+
+  const updateData = useCallback((newData: T) => {
+    setData(newData);
+    setErrors([]); // Clear errors on data change
+  }, []);
+
+  return {
+    data,
+    errors,
+    isValidating,
+    updateData,
+    validate
+  };
+}
+
+// Optimized JSON editor hook
+export function useOptimizedJsonEditor<T>(
+  initial: T,
+  validateFn: (data: any) => Promise<{ isValid: boolean; errors: string[] }>
+) {
+  const [raw, setRaw] = useState<string>(() => JSON.stringify(initial, null, 2));
+  const [parsed, setParsed] = useState<T>(initial);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
+  const validateTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const debouncedValidate = useCallback(async (text: string) => {
+    if (validateTimeoutRef.current) {
+      clearTimeout(validateTimeoutRef.current);
+    }
+
+    validateTimeoutRef.current = setTimeout(async () => {
+      try {
+        const obj = JSON.parse(text);
+        setIsValidating(true);
+        const result = await validateFn(obj);
+        
+        if (result.isValid) {
+          setParsed(obj);
+          setErrors([]);
+        } else {
+          setErrors(result.errors);
+        }
+      } catch (e: any) {
+        setErrors([e.message]);
+      } finally {
+        setIsValidating(false);
+      }
+    }, 500); // 500ms debounce
+  }, [validateFn]);
+
+  const updateRaw = useCallback((text: string) => {
+    setRaw(text);
+    debouncedValidate(text);
+  }, [debouncedValidate]);
+
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const onUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    file.text().then((text) => {
+      updateRaw(text);
+    });
+  }, [updateRaw]);
+
+  return { 
+    raw, 
+    updateRaw, 
+    parsed, 
+    errors, 
+    isValidating,
+    uploadRef, 
+    onUpload 
+  };
+}
+
+================
+File: src/components/WorldSidebar.tsx
+================
+import React, { memo, useCallback } from "react";
+import { Button } from "./ui/button";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+interface World {
+  id: string;
+  time?: string;
+  tension?: number;
+}
+
+interface WorldSidebarProps {
+  worlds: World[];
+  selectedWorldId: string | null;
+  onSelectWorld: (id: string) => void;
+  onCreateWorld: () => void;
+  onDeleteWorld: (id: string) => void;
+}
+
+// Memoized world item component
+const WorldItem = memo(({ 
+  world, 
+  isSelected, 
+  onSelect, 
+  onDelete 
+}: { 
+  world: World; 
+  isSelected: boolean; 
+  onSelect: () => void; 
+  onDelete: () => void; 
+}) => {
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete();
+  }, [onDelete]);
+
+  const getTensionColor = useCallback((tension: number) => {
+    if (tension > 0.7) return 'text-red-400';
+    if (tension > 0.4) return 'text-yellow-400';
+    return 'text-green-400';
+  }, []);
+
+  return (
+    <motion.div
+      className={`p-4 border-b border-slate-800/50 cursor-pointer transition-colors ${
+        isSelected 
+          ? 'bg-indigo-500/20 border-l-4 border-l-indigo-500' 
+          : 'hover:bg-slate-800/30'
+      }`}
+      onClick={onSelect}
+      whileHover={{ x: 4 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-sm truncate mb-1">{world.id}</h3>
+          <p className="text-xs text-slate-400 mb-2">{world.time || 'No time set'}</p>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-500">
+              Tension: <span className={`font-medium ${getTensionColor(world.tension || 0)}`}>
+                {(world.tension || 0).toFixed(1)}
+              </span>
+            </span>
+          </div>
+        </div>
+        <Button 
+          variant="secondary" 
+          onClick={handleDelete}
+          className="ml-2 p-1 text-red-400 hover:text-red-300"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
+    </motion.div>
+  );
+});
+
+WorldItem.displayName = 'WorldItem';
+
+// Memoized empty state
+const EmptyState = memo(() => (
+  <div className="p-8 text-center text-slate-500">
+    <p className="text-sm">No worlds created yet.</p>
+    <p className="text-xs mt-1">Click the + button to create your first world.</p>
+  </div>
+));
+
+EmptyState.displayName = 'EmptyState';
+
+// Main component
+const WorldSidebarOptimized = memo<WorldSidebarProps>(({ 
+  worlds, 
+  selectedWorldId, 
+  onSelectWorld, 
+  onCreateWorld, 
+  onDeleteWorld 
+}) => {
+  return (
+    <div className="w-64 h-full border-r border-slate-800 bg-slate-950/50">
+      <div className="p-4 border-b border-slate-800">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Worlds</h2>
+          <Button onClick={onCreateWorld}>
+            <PlusCircle className="h-4 w-4"/>
+          </Button>
+        </div>
+      </div>
+      
+      <div className="overflow-auto h-full pb-16">
+        {worlds.length === 0 ? (
+          <EmptyState />
+        ) : (
+          worlds.map((world) => (
+            <WorldItem
+              key={world.id}
+              world={world}
+              isSelected={selectedWorldId === world.id}
+              onSelect={() => onSelectWorld(world.id)}
+              onDelete={() => onDeleteWorld(world.id)}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+});
+
+WorldSidebarOptimized.displayName = 'WorldSidebarOptimized';
+
+export default WorldSidebarOptimized;
+
+================
+File: src/context/AuthContext.tsx
+================
+import React, { createContext, useContext, useEffect, useState } from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
+
+type AuthState = { session: Session | null; user: User | null; loading: boolean };
+const AuthContext = createContext<AuthState>({ session: null, user: null, loading: true });
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<AuthState>({ session: null, user: null, loading: true });
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!active) return;
+      setState({ session, user: session?.user ?? null, loading: false });
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setState({ session, user: session?.user ?? null, loading: false });
+    });
+    return () => { sub.subscription.unsubscribe(); active = false; };
+  }, []);
+
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
+}
+
+export const useAuth = () => useContext(AuthContext);
+
+================
+File: src/context/WorldContext.tsx
+================
+import React, { createContext, useContext, useState, useCallback } from "react";
+
+interface WorldContextType {
+  worldId: string | null;
+  setWorldId: (id: string | null) => void;
+}
+
+const WorldContext = createContext<WorldContextType>({
+  worldId: null,
+  setWorldId: () => {},
+});
+
+export function WorldProvider({ children }: { children: React.ReactNode }) {
+  const [worldId, setWorldIdState] = useState<string | null>(null);
+
+  const setWorldId = useCallback((id: string | null) => {
+    setWorldIdState(id);
+  }, []);
+
+  return (
+    <WorldContext.Provider value={{ worldId, setWorldId }}>
+      {children}
+    </WorldContext.Provider>
+  );
+}
+
+export const useWorld = () => {
+  const context = useContext(WorldContext);
+  if (!context) {
+    throw new Error("useWorld must be used within a WorldProvider");
+  }
+  return context;
+};
+
+================
+File: src/hooks/useDebounce.ts
+================
+import { useState, useEffect } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+================
+File: src/hooks/useEntityManager.ts
+================
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { listEntities, upsertEntity, deleteEntity, onEntitiesChange } from '@/lib/entities';
+import { useDebounce } from './useDebounce';
+
+interface Entity {
+  id: string;
+  world_id: string;
+  name: string;
+  tags: string[];
+  srd: any;
+  personality: any;
+  status: any;
+  relationships: any;
+  [key: string]: any;
+}
+
+export function useEntityManager(worldId: string | null) {
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [selected, setSelected] = useState(-1);
+  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const debouncedQuery = useDebounce(query, 300);
+
+  // Load entities when worldId changes
+  useEffect(() => {
+    if (!worldId) {
+      setEntities([]);
+      setSelected(-1);
+      return;
+    }
+
+    let isCancelled = false;
+    setIsLoading(true);
+
+    const loadEntities = async () => {
+      try {
+        const rows = await listEntities(worldId);
+        if (!isCancelled) {
+          setEntities(rows);
+          setSelected(rows.length > 0 ? 0 : -1);
+        }
+      } catch (e) {
+        if (!isCancelled) {
+          console.warn("Load entities failed", e);
+          setEntities([]);
+          setSelected(-1);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadEntities();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [worldId]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!worldId) return;
+
+    const subscription = onEntitiesChange((payload) => {
+      const { eventType, new: newRow, old: oldRow } = payload;
+      
+      // Filter by world_id
+      if (newRow && (newRow as any).world_id !== worldId) return;
+      if (oldRow && (oldRow as any).world_id !== worldId) return;
+      
+      switch (eventType) {
+        case 'INSERT':
+          if (newRow) {
+            setEntities(prev => {
+              const exists = prev.find(e => e.id === newRow.id);
+              if (exists) return prev;
+              return [newRow as Entity, ...prev];
+            });
+          }
+          break;
+          
+        case 'UPDATE':
+          if (newRow) {
+            setEntities(prev => prev.map(e => e.id === newRow.id ? newRow as Entity : e));
+          }
+          break;
+          
+        case 'DELETE':
+          if (oldRow) {
+            setEntities(prev => {
+              const newEntities = prev.filter(e => e.id !== oldRow.id);
+              // Update selected index if needed
+              setSelected(current => {
+                if (current >= 0 && prev[current]?.id === oldRow.id) {
+                  return newEntities.length > 0 ? 0 : -1;
+                }
+                return current >= newEntities.length ? newEntities.length - 1 : current;
+              });
+              return newEntities;
+            });
+          }
+          break;
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [worldId]);
+
+  // Memoized filtered entities
+  const filteredEntities = useMemo(() => {
+    if (!debouncedQuery) return entities.map((e, i) => ({ entity: e, index: i }));
+    
+    const lowerQuery = debouncedQuery.toLowerCase();
+    return entities
+      .map((e, i) => ({ entity: e, index: i }))
+      .filter(({ entity: e }) => {
+        const searchText = `${e.name} ${e.id} ${(e.tags || []).join(" ")}`.toLowerCase();
+        return searchText.includes(lowerQuery);
+      });
+  }, [entities, debouncedQuery]);
+
+  // Current entity
+  const currentEntity = useMemo(() => {
+    return selected >= 0 && selected < entities.length ? entities[selected] : null;
+  }, [entities, selected]);
+
+  // Actions
+  const updateEntity = useCallback((patch: Partial<Entity>) => {
+    if (selected < 0) return;
+    
+    setEntities(prev => {
+      const next = [...prev];
+      next[selected] = { ...next[selected], ...patch };
+      return next;
+    });
+  }, [selected]);
+
+  const updateNestedEntity = useCallback((path: string[], value: any) => {
+    if (selected < 0) return;
+    
+    setEntities(prev => {
+      const next = [...prev];
+      const obj = { ...next[selected] };
+      let current = obj;
+      
+      for (let i = 0; i < path.length - 1; i++) {
+        const key = path[i];
+        current[key] = { ...(current[key] || {}) };
+        current = current[key];
+      }
+      
+      current[path[path.length - 1]] = value;
+      next[selected] = obj;
+      return next;
+    });
+  }, [selected]);
+
+  const saveEntity = useCallback(async () => {
+    if (selected < 0 || !currentEntity) return;
+    
+    try {
+      await upsertEntity(currentEntity);
+    } catch (e) {
+      console.error('Failed to save entity:', e);
+    }
+  }, [selected, currentEntity]);
+
+  const deleteCurrentEntity = useCallback(async () => {
+    if (selected < 0 || !currentEntity) return;
+    
+    try {
+      await deleteEntity(currentEntity.id);
+      // State will be updated via realtime subscription
+    } catch (e) {
+      console.error('Failed to delete entity:', e);
+    }
+  }, [selected, currentEntity]);
+
+  const addNewEntity = useCallback(() => {
+    if (!worldId) return;
+    
+    const id = `npc_${Math.random().toString(36).slice(2, 7)}`;
+    const newEntity: Entity = {
+      id,
+      world_id: worldId,
+      name: "New Entity",
+      tags: [],
+      srd: {
+        level: 1,
+        ancestry: "Human",
+        role: "Fighter",
+        alignment: "N",
+        stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+        hp: 10,
+        ac: 10,
+        saves: { fortitude: 0, reflex: 0, will: 0 },
+        skills: {},
+        abilities: [],
+        inventory: []
+      },
+      personality: {
+        temperament: "",
+        ideals: [],
+        fears: [],
+        motivations: [],
+        flaws: []
+      },
+      relationships: {},
+      memory: [],
+      status: { location: "", faction: "", mood: "", current_task: "", flags: [] }
+    };
+    
+    setEntities(prev => [...prev, newEntity]);
+    setSelected(entities.length);
+  }, [worldId, entities.length]);
+
+  const duplicateEntity = useCallback(() => {
+    if (!worldId || !currentEntity) return;
+    
+    const clone = structuredClone(currentEntity);
+    clone.id = `${clone.id}_copy`;
+    clone.world_id = worldId;
+    
+    setEntities(prev => [...prev, clone]);
+    setSelected(entities.length);
+  }, [worldId, currentEntity, entities.length]);
+
+  return {
+    entities,
+    filteredEntities,
+    currentEntity,
+    selected,
+    setSelected,
+    query,
+    setQuery,
+    isLoading,
+    updateEntity,
+    updateNestedEntity,
+    saveEntity,
+    deleteCurrentEntity,
+    addNewEntity,
+    duplicateEntity
+  };
+}
+
+================
+File: src/index.css
+================
+/* src/index.css */
+@import "tailwindcss";
+
+================
+File: src/lib/arcs.ts
+================
+import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+export type ArcRow = {
+  id: string; // UUID
+  world_id: string; // UUID
+  title: string;
+  stage?: string;
+  goal?: string;
+  progress: number;
+  triggers: string[];
+  beats: string[];
+  pressure_vector: any;
+  owner?: string;
+  created_at: string;
+};
+export async function listArcs(worldId: string): Promise<ArcRow[]> {
+  const { data, error } = await supabase.from("arcs")
+    .select("*").eq("world_id", worldId)
+    .order("title", { ascending: true });
+  if (error) throw error; return data ?? [];
+}
+export async function upsertArc(row: ArcRow): Promise<ArcRow> {
+  const { data, error } = await supabase.from("arcs").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error; return data!;
+}
+export async function deleteArc(id:string){ const { error } = await supabase.from("arcs").delete().eq("id",id); if (error) throw error; }
+
+export function onArcsChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel("arcs-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "arcs" }, cb)
+    .subscribe();
+}
+
+================
+File: src/lib/entities.ts
+================
+import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+
+export type EntityRow = {
+  id: string; // UUID
+  world_id: string; // UUID
+  name: string;
+  tags: string[];
+  srd: any;
+  personality: any;
+  status: any;
+  relationships: any;
+  memory: any[];
+  created_at: string;
+};
+
+export async function listEntities(worldId: string): Promise<EntityRow[]> {
+  const { data, error } = await supabase.from("entities")
+    .select("*").eq("world_id", worldId)
+    .order("name", { ascending: true });
+  if (error) throw error; return data ?? [];
+}
+
+export async function upsertEntity(row: EntityRow): Promise<EntityRow> {
+  const { data, error } = await supabase.from("entities").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error;
+  return data!;
+}
+
+export async function deleteEntity(id: string) {
+  const { error } = await supabase.from("entities").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export function onEntitiesChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel("entities-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "entities" }, cb)
+    .subscribe();
+}
+
+================
+File: src/lib/events.ts
+================
+import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+export type EventRow = {
+  id: string; // UUID
+  world_id: string; // UUID
+  type: string;
+  title?: string;
+  payload: any;
+  priority: number;
+  source?: string;
+  tags: string[];
+  expires_at?: string;
+  created_at: string;
+};
+
+export async function listEvents(world_id: string): Promise<EventRow[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("world_id", world_id)
+    .order("created_at", { ascending: false });
+  if (error) throw error; return data ?? [];
+}
+
+export async function insertEvent(row: Omit<EventRow, "id"|"created_at">) {
+  const { data, error } = await supabase.from("events").insert(row).select().single();
+  if (error) throw error; return data!;
+}
+
+export async function deleteEvent(id: string) {
+  const { error } = await supabase.from("events").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export function onEventsChangeForWorld(world_id: string, cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel(`events-${world_id}`)
+    .on("postgres_changes", { event: "*", schema: "public", table: "events", filter: `world_id=eq.${world_id}` }, cb)
+    .subscribe();
+}
+
+================
+File: src/lib/factions.ts
+================
+import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+export type FactionRow = {
+  id: string; // UUID
+  world_id: string; // UUID
+  name: string;
+  tags: string[];
+  ideology?: string;
+  goals: string[];
+  pressure: number;
+  stability: number;
+  resources: any;
+  relations: any;
+  leaders?: string[];
+  created_at: string;
+};
+export async function listFactions(worldId: string): Promise<FactionRow[]> {
+  const { data, error } = await supabase.from("factions")
+    .select("*").eq("world_id", worldId)
+    .order("name", { ascending: true });
+  if (error) throw error; return data ?? [];
+}
+export async function upsertFaction(row: FactionRow): Promise<FactionRow> {
+  const { data, error } = await supabase.from("factions").upsert(row,{ onConflict:"id" }).select().single();
+  if (error) throw error; return data!;
+}
+export async function deleteFaction(id:string){ const { error } = await supabase.from("factions").delete().eq("id",id); if (error) throw error; }
+
+export function onFactionsChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel("factions-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "factions" }, cb)
+    .subscribe();
+}
+
+================
+File: src/lib/supabase.ts
+================
+import { createClient } from "@supabase/supabase-js";
+
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
+
+================
+File: src/lib/worlds.ts
+================
+import { supabase } from "./supabase";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+
+export type WorldRow = {
+  id: string;  // UUID
+  created_by: string;  // UUID
+  name: string;
+  time?: string;
+  weather?: string;
+  locations: string[];      // text[]
+  factions: any;            // jsonb
+  events: any[];            // jsonb array
+  history_log: string[];    // jsonb array
+  tension: number;
+  created_at: string;
+};
+
+export async function listWorlds() {
+  const { data, error } = await supabase
+    .from("worlds")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as WorldRow[];
+}
+
+export async function createWorld(name: string, partial: Partial<WorldRow> = {}) {
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Must be authenticated to create world");
+
+  // IMPORTANT: locations is string[]; factions/events/history are jsonb
+  const base: Omit<WorldRow, "id" | "created_at"> = {
+    created_by: user.id,
+    name,
+    time: "Day 1, 00:00",
+    weather: "clear",
+    locations: [],
+    factions: {},
+    events: [],
+    history_log: [],
+    tension: 0,
+  };
+  const payload = { ...base, ...partial };
+
+  const { data, error } = await supabase
+    .from("worlds")
+    .insert(payload)      // no id -> Postgres default UUID fills it
+    .select()
+    .single();
+  if (error) throw error;
+  return data as WorldRow;
+}
+
+export async function upsertWorld(row: Partial<WorldRow> & { id: string }) {
+  // Only call this when editing existing world with a real id
+  const { data, error } = await supabase
+    .from("worlds")
+    .upsert(row, { onConflict: "id" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as WorldRow;
+}
+
+export async function renameWorld(id: string, name: string) {
+  const { data, error } = await supabase
+    .from("worlds")
+    .update({ name })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as WorldRow;
+}
+
+export async function deleteWorld(id: string) {
+  const { error } = await supabase.from("worlds").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export function onWorldsChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+  return supabase
+    .channel("worlds-rt")
+    .on("postgres_changes", { event: "*", schema: "public", table: "worlds" }, cb)
+    .subscribe();
+}
+
+export async function advanceWorldTick(world_id: string, hours: number = 1) {
+  const { data, error } = await supabase.functions.invoke('advanceWorldTick', {
+    body: { world_id, hours }
+  });
+  if (error) throw error;
+  return data;
+}
+
+================
+File: src/main.tsx
+================
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { AuthProvider } from "./context/AuthContext";
+import { WorldProvider } from "./context/WorldContext";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <WorldProvider>
+        <App />
+      </WorldProvider>
+    </AuthProvider>
+  </React.StrictMode>
+);
+
+================
+File: src/pages/GameScreen.tsx
+================
+// src/pages/GameScreen.tsx
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useWorld } from "@/context/WorldContext";
+import { Play, FastForward, Filter } from "lucide-react";
+import { listEvents, type EventRow } from "@/lib/events";
+import { listEntities } from "@/lib/entities";
+import { listFactions } from "@/lib/factions";
+import { listArcs } from "@/lib/arcs";
+import { advanceWorldTick } from "@/lib/worlds";
+
+export default function GameScreen() {
+  const { worldId } = useWorld();
+  const [world, setWorld] = useState<any>(null);
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [party, setParty] = useState<any[]>([]);
+  const [arcs, setArcs] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const tensionPct = Math.max(0, Math.min(100, (world?.tension ?? 0) * 100)); // tension 0..1 -> 0..100
+
+  useEffect(() => {
+    if (!worldId) return;
+    (async () => {
+      setLoading(true);
+      const [w, e, ents, qs] = await Promise.all([
+        supabase.from("worlds").select("*").eq("id", worldId).single(),
+        listEvents(worldId),
+        // party: tags contains "party"
+        supabase.from("entities").select("*").eq("world_id", worldId).contains("tags", ["party"]),
+        supabase.from("arcs").select("*").eq("world_id", worldId).order("created_at", { ascending: false })
+      ]);
+      if (!w.error) setWorld(w.data);
+      setEvents(e as any[]);
+      if (!ents.error) setParty(ents.data ?? []);
+      if (!qs.error) setArcs(qs.data ?? []);
+      setLoading(false);
+    })();
+
+    const ch = supabase
+      .channel(`world-${worldId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'worlds', filter: `id=eq.${worldId}` },
+        (p: any) => setWorld(p.new))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'events', filter: `world_id=eq.${worldId}` },
+        (p: any) => {
+          if (p.eventType === "INSERT") setEvents(prev => [p.new, ...prev]);
+          if (p.eventType === "UPDATE") setEvents(prev => prev.map(ev => ev.id === p.new.id ? p.new : ev));
+          if (p.eventType === "DELETE") setEvents(prev => prev.filter(ev => ev.id !== p.old.id));
+        })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'entities', filter: `world_id=eq.${worldId}` },
+        (p: any) => {
+          // keep party list in sync
+          const row = p.new ?? p.old;
+          const isParty = (row?.tags ?? []).includes("party");
+          if (!isParty) return;
+          if (p.eventType === "INSERT") setParty(prev => [p.new, ...prev]);
+          if (p.eventType === "UPDATE") setParty(prev => prev.map(e => e.id === p.new.id ? p.new : e));
+          if (p.eventType === "DELETE") setParty(prev => prev.filter(e => e.id !== p.old.id));
+        })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'arcs', filter: `world_id=eq.${worldId}` },
+        (p: any) => {
+          if (p.eventType === "INSERT") setArcs(prev => [p.new, ...prev]);
+          if (p.eventType === "UPDATE") setArcs(prev => prev.map(a => a.id === p.new.id ? p.new : a));
+          if (p.eventType === "DELETE") setArcs(prev => prev.filter(a => a.id !== p.old.id));
+        })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [worldId]);
+
+  async function advanceTick() {
+    if (!worldId) return;
+    await advanceWorldTick(worldId, 1);
+  }
+
+  async function randomEncounter() {
+    // super simple: insert a "rumor/encounter" event
+    if (!worldId) return;
+    await supabase.from("events").insert([{
+      world_id: worldId,
+      type: "encounter",
+      title: "A shadow in the alley",
+      payload: { danger: Math.floor(Math.random()*3)+1 },
+      priority: 2,
+      tags: ["encounter","urban"]
+    }]);
+  }
+
+  if (!worldId) return <div className="p-6 text-slate-200">Select or create a world first.</div>;
+  if (loading) return <div className="p-6 text-slate-200">Loading world…</div>;
+
+  const locations: string[] = useMemo(() => (world?.locations ?? []), [world]);
+  const filteredEvents = useMemo(() => {
+    if (!selectedLocation) return events;
+    return events.filter(e => (e.tags ?? []).includes(selectedLocation));
+  }, [events, selectedLocation]);
+
+  return (
+    <div className="h-[calc(100vh-56px)] grid grid-cols-12 gap-3 p-3 bg-slate-950 text-slate-100">
+      {/* HUD */}
+      <div className="col-span-12 flex items-center justify-between rounded-xl border border-slate-800 p-3 bg-slate-900/60">
+        <div className="flex items-center gap-4">
+          <div className="text-lg font-semibold">{world?.name ?? "World"}</div>
+          <div className="text-slate-300">{world?.time ?? "—"}</div>
+          <div className="w-48 h-2 bg-slate-800 rounded overflow-hidden">
+            <div className="h-2 bg-emerald-400" style={{ width: `${tensionPct}%` }} />
+          </div>
+          <div className="text-xs text-slate-400">Tension {Math.round(tensionPct)}%</div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={advanceTick} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700">
+            <FastForward className="w-4 h-4" /> Advance Tick
+          </button>
+          <button onClick={randomEncounter} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700">
+            <Play className="w-4 h-4" /> Random Encounter
+          </button>
+        </div>
+      </div>
+
+      {/* Map/Locations */}
+      <div className="col-span-3 rounded-xl border border-slate-800 p-3 bg-slate-900/40">
+        <div className="flex items-center justify-between mb-2">
+          <div className="font-medium">Locations</div>
+          <button onClick={() => setSelectedLocation(null)} className="text-xs text-slate-400 hover:text-slate-200 inline-flex items-center gap-1">
+            <Filter className="w-3 h-3" /> Clear
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {locations?.map((loc: string) => (
+            <button key={loc}
+              onClick={() => setSelectedLocation(l => l === loc ? null : loc)}
+              className={`rounded-lg px-2 py-2 border text-left truncate ${
+                selectedLocation === loc ? "bg-slate-800 border-slate-600" : "bg-slate-900 border-slate-800 hover:border-slate-600"
+              }`}>
+              {loc}
+            </button>
+          ))}
+          {(!locations || locations.length === 0) && <div className="text-sm text-slate-400">No locations yet.</div>}
+        </div>
+      </div>
+
+      {/* Event Feed */}
+      <div className="col-span-6 rounded-xl border border-slate-800 p-3 bg-slate-900/40 overflow-y-auto">
+        <div className="font-medium mb-2">Event Feed</div>
+        <ul className="space-y-2">
+          {filteredEvents.map(ev => (
+            <li key={ev.id} className="rounded-lg border border-slate-800 p-2 bg-slate-900/60">
+              <div className="text-sm flex items-center gap-2">
+                <span className="inline-block px-2 py-0.5 rounded bg-slate-800 text-xs capitalize">{ev.type}</span>
+                <span className="font-medium">{ev.title ?? "(Untitled event)"}</span>
+                <span className="text-xs text-slate-400 ml-auto">{new Date(ev.created_at).toLocaleString()}</span>
+              </div>
+              {Array.isArray(ev.tags) && ev.tags.length > 0 && (
+                <div className="mt-1 text-xs text-slate-400">#{ev.tags.join(" #")}</div>
+              )}
+            </li>
+          ))}
+          {filteredEvents.length === 0 && <div className="text-sm text-slate-400">No events.</div>}
+        </ul>
+      </div>
+
+      {/* Party Pane */}
+      <div className="col-span-3 rounded-xl border border-slate-800 p-3 bg-slate-900/40">
+        <div className="font-medium mb-2">Party</div>
+        <ul className="space-y-2">
+          {party.map(p => (
+            <li key={p.id} className="rounded-lg border border-slate-800 p-2 bg-slate-900/60">
+              <div className="font-medium">{p.name}</div>
+              <div className="text-xs text-slate-400">
+                {["hp","ac","level"].map(k => p.srd?.[k] ?? p.srd?.stats?.[k]).filter(Boolean).slice(0,3).join(" • ") || "—"}
+              </div>
+            </li>
+          ))}
+          {party.length === 0 && <div className="text-sm text-slate-400">No party members tagged yet.</div>}
+        </ul>
+      </div>
+
+      {/* Quests Pane */}
+      <div className="col-span-3 rounded-xl border border-slate-800 p-3 bg-slate-900/40">
+        <div className="font-medium mb-2">Quests</div>
+        <ul className="space-y-2">
+          {arcs.map(a => (
+            <li key={a.id} className="rounded-lg border border-slate-800 p-2 bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{a.title}</div>
+                  <div className="text-xs text-slate-400">{a.stage ?? "—"}</div>
+                </div>
+                <div className="w-24 h-2 bg-slate-800 rounded overflow-hidden">
+                  <div className="h-2 bg-indigo-400" style={{ width: `${Math.max(0, Math.min(100, (a.progress ?? 0)*100))}%` }} />
+                </div>
+              </div>
+            </li>
+          ))}
+          {arcs.length === 0 && <div className="text-sm text-slate-400">No quests yet.</div>}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+================
+File: src/schemas/json-schema-2020-12.json
+================
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://json-schema.org/draft/2020-12/schema",
+    "$vocabulary": {
+        "https://json-schema.org/draft/2020-12/vocab/core": true,
+        "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+        "https://json-schema.org/draft/2020-12/vocab/unevaluated": true,
+        "https://json-schema.org/draft/2020-12/vocab/validation": true,
+        "https://json-schema.org/draft/2020-12/vocab/meta-data": true,
+        "https://json-schema.org/draft/2020-12/vocab/format-annotation": true,
+        "https://json-schema.org/draft/2020-12/vocab/content": true
+    },
+    "$dynamicAnchor": "meta",
+
+    "title": "Core and Validation specifications meta-schema",
+    "allOf": [
+        {"$ref": "meta/core"},
+        {"$ref": "meta/applicator"},
+        {"$ref": "meta/unevaluated"},
+        {"$ref": "meta/validation"},
+        {"$ref": "meta/meta-data"},
+        {"$ref": "meta/format-annotation"},
+        {"$ref": "meta/content"}
+    ],
+    "type": ["object", "boolean"],
+    "$comment": "This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.",
+    "properties": {
+        "definitions": {
+            "$comment": "\"definitions\" has been replaced by \"$defs\".",
+            "type": "object",
+            "additionalProperties": { "$dynamicRef": "#meta" },
+            "deprecated": true,
+            "default": {}
+        },
+        "dependencies": {
+            "$comment": "\"dependencies\" has been split and replaced by \"dependentSchemas\" and \"dependentRequired\" in order to serve their differing semantics.",
+            "type": "object",
+            "additionalProperties": {
+                "anyOf": [
+                    { "$dynamicRef": "#meta" },
+                    { "$ref": "meta/validation#/$defs/stringArray" }
+                ]
+            },
+            "deprecated": true,
+            "default": {}
+        },
+        "$recursiveAnchor": {
+            "$comment": "\"$recursiveAnchor\" has been replaced by \"$dynamicAnchor\".",
+            "$ref": "meta/core#/$defs/anchorString",
+            "deprecated": true
+        },
+        "$recursiveRef": {
+            "$comment": "\"$recursiveRef\" has been replaced by \"$dynamicRef\".",
+            "$ref": "meta/core#/$defs/uriReferenceString",
+            "deprecated": true
+        }
+    }
+}
+
+================
+File: src/vite-env.d.ts
+================
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string
+  readonly VITE_SUPABASE_ANON_KEY: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
+================
+File: supabase/functions/advanceWorldTick/index.ts
+================
+// supabase/functions/advanceWorldTick/index.ts
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+Deno.serve(async (req) => {
+  const { world_id, hours = 1 } = await req.json();
+  const userToken = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const url = Deno.env.get("SUPABASE_URL")!;
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const db = createClient(url, key);
+
+  const { data: world, error: werr } = await db.from("worlds").select("*").eq("id", world_id).single();
+  if (werr || !world) return new Response(JSON.stringify({ ok: false, error: werr?.message || "world not found" }), { status: 400 });
+
+  // Optional safety: if caller sent a user token, verify ownership
+  if (userToken) {
+    const userClient = createClient(url, userToken);
+    const { data: owned, error: oerr } = await userClient.from("worlds").select("id").eq("id", world_id).single();
+    if (oerr || !owned) return new Response(JSON.stringify({ ok:false, error:"forbidden" }), { status: 403 });
+  }
+
+  // naive time + tension drift
+  const time = `${world.time || "Day 1, 00:00"} (+${hours}h)`;
+  const tension = Math.min(1, Math.max(0, (world.tension ?? 0) + (Math.random() - 0.5) * 0.05));
+
+  await db.from("worlds").update({ time, tension }).eq("id", world_id);
+
+  // seed a rumor if tension moderate
+  if (tension < 0.6) {
+    await db.from("events").insert({
+      world_id, type: "rumor", title: "Market whispers",
+      payload: { content: "Supplies are thinner than they look." },
+      priority: 2, source: "tick", tags: ["tick", "rumor"]
+    });
+  }
+
+  return new Response(JSON.stringify({ ok: true, world_id, hours, tension }), { headers: { "content-type": "application/json" } });
+});
+
+================
+File: supabase/schema.sql
+================
+-- AI Game Master Engine - Supabase Schema
+-- Run this in the Supabase SQL Editor to create/update tables
+
+-- Worlds: UUID PK + owner
+create table if not exists public.worlds (
+  id uuid primary key default gen_random_uuid(),
+  created_by uuid not null,
+  name text not null,
+  time text,
+  weather text,
+  locations jsonb not null default '[]',
+  factions  jsonb not null default '{}',
+  events    jsonb not null default '[]',
+  history_log jsonb not null default '[]',
+  tension numeric not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- Backfill owner for existing rows (optional):
+-- update public.worlds set created_by = auth.uid() where created_by is null;  -- run per-session
+
+create table if not exists public.entities (
+  id uuid primary key default gen_random_uuid(),
+  world_id uuid not null references public.worlds(id) on delete cascade,
+  name text not null,
+  tags jsonb not null default '[]',
+  srd jsonb not null default '{}',
+  personality jsonb not null default '{}',
+  status jsonb not null default '{}',
+  relationships jsonb not null default '{}',
+  memory jsonb not null default '[]',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.factions (
+  id uuid primary key default gen_random_uuid(),
+  world_id uuid not null references public.worlds(id) on delete cascade,
+  name text not null,
+  tags jsonb not null default '[]',
+  ideology text,
+  goals jsonb not null default '[]',
+  pressure numeric not null default 0,
+  stability numeric not null default 0,
+  resources jsonb not null default '{}',
+  relations jsonb not null default '{}',
+  leaders jsonb not null default '[]',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.arcs (
+  id uuid primary key default gen_random_uuid(),
+  world_id uuid not null references public.worlds(id) on delete cascade,
+  title text not null,
+  stage text,
+  goal text,
+  progress numeric not null default 0,
+  triggers jsonb not null default '[]',
+  beats jsonb not null default '[]',
+  pressure_vector jsonb not null default '{}',
+  owner text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  world_id uuid not null references public.worlds(id) on delete cascade,
+  type text not null,
+  title text,
+  payload jsonb not null default '{}',
+  priority integer not null default 1,
+  source text,
+  tags jsonb not null default '[]',
+  expires_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- Enable Row Level Security
+alter table public.worlds enable row level security;
+alter table public.entities enable row level security;
+alter table public.factions enable row level security;
+alter table public.arcs enable row level security;
+alter table public.events enable row level security;
+
+-- RLS: per-owner for worlds
+create policy "worlds_select_own" on public.worlds
+  for select using (created_by = auth.uid());
+create policy "worlds_modify_own" on public.worlds
+  for all using (created_by = auth.uid()) with check (created_by = auth.uid());
+
+-- RLS: children must reference a world owned by user
+create policy "entities_world_scope" on public.entities
+  for all using (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()))
+  with check (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()));
+
+create policy "factions_world_scope" on public.factions
+  for all using (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()))
+  with check (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()));
+
+create policy "arcs_world_scope" on public.arcs
+  for all using (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()))
+  with check (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()));
+
+create policy "events_world_scope" on public.events
+  for all using (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()))
+  with check (exists (select 1 from public.worlds w where w.id = world_id and w.created_by = auth.uid()));
+
+-- Enable realtime for all tables
+alter publication supabase_realtime add table public.worlds;
+alter publication supabase_realtime add table public.entities;
+alter publication supabase_realtime add table public.factions;
+alter publication supabase_realtime add table public.arcs;
+alter publication supabase_realtime add table public.events;
+
+================
+File: tailwind.config.js
+================
+// tailwind.config.js
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+}
+
+================
+File: tsconfig.json
+================
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
+
+================
+File: tsconfig.tsbuildinfo
+================
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/engineeditor.tsx","./src/components/eventsmanager.tsx","./src/components/login.tsx","./src/components/worldsidebar.tsx","./src/components/managers/arcsmanager.tsx","./src/components/managers/entitiesmanager.tsx","./src/components/managers/factionsmanager.tsx","./src/components/managers/worldsmanager.tsx","./src/components/ui/actionbar.tsx","./src/components/ui/button.tsx","./src/components/ui/card.tsx","./src/components/ui/input.tsx","./src/components/ui/tabs.tsx","./src/components/ui/textarea.tsx","./src/components/utils/validation.ts","./src/context/authcontext.tsx","./src/context/worldcontext.tsx","./src/hooks/usedebounce.ts","./src/hooks/useentitymanager.ts","./src/lib/arcs.ts","./src/lib/entities.ts","./src/lib/events.ts","./src/lib/factions.ts","./src/lib/supabase.ts","./src/lib/worlds.ts"],"version":"5.9.2"}
+
+================
+File: vite.config.ts
+================
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 5173 },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
+
+
+
+================================================================
+End of Codebase
+================================================================

@@ -2,8 +2,16 @@ import { supabase } from "./supabase";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export type EntityRow = {
-  id: string; world_id: string; name: string; tags: string[];
-  srd: any; personality: any; status: any; relationships: any;
+  id: string; // UUID
+  world_id: string; // UUID
+  name: string;
+  tags: string[];
+  srd: any;
+  personality: any;
+  status: any;
+  relationships: any;
+  memory: any[];
+  created_at: string;
 };
 
 export async function listEntities(worldId: string): Promise<EntityRow[]> {
@@ -15,7 +23,8 @@ export async function listEntities(worldId: string): Promise<EntityRow[]> {
 
 export async function upsertEntity(row: EntityRow): Promise<EntityRow> {
   const { data, error } = await supabase.from("entities").upsert(row,{ onConflict:"id" }).select().single();
-  if (error) throw error; return data!;
+  if (error) throw error;
+  return data!;
 }
 
 export async function deleteEntity(id: string) {

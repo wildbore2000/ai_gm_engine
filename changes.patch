@@ -1,0 +1,15 @@
+--- a/src/context/WorldContext.tsx
++++ b/src/context/WorldContext.tsx
+@@
+-  const [worldId, setWorldIdState] = useState<string | null>(null);
++  const [worldId, setWorldIdState] = useState<string | null>(() => {
++    try { return localStorage.getItem("worldId"); } catch { return null; }
++  });
+@@
+   const setWorldId = useCallback((id: string | null) => {
+     setWorldIdState(id);
++    try {
++      if (id) localStorage.setItem("worldId", id);
++      else localStorage.removeItem("worldId");
++    } catch {}
+   }, []);

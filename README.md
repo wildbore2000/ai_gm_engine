@@ -1,30 +1,45 @@
 # AI GM Engine
 
 An experimental **AI-driven Game Master engine** inspired by tabletop RPGs and games like *RimWorld*, *Baldur’s Gate*, and *Neverwinter Nights*.  
-The engine is structured around JSON-defined entities, factions, arcs, and worlds, with Supabase handling persistence and optional Edge Functions for simulation.
+
+This project is both a **world editor** (define entities, factions, arcs, and events) and a **GM Screen** that lets you **advance time, trigger encounters, and watch your world evolve in real-time**.  
+Supabase provides persistence, authentication, realtime sync, and optional Edge Functions for simulation.
 
 ---
 
-## Features
-- **Entity/Faction/Arc/World Manager** – UI for creating and editing game objects
-- **JSON Schema Validation** – all game data conforms to defined structures
-- **Supabase Integration** – store game data in Postgres with Row-Level Security
-- **Edge Functions (optional)** – run server-side world updates, log events, advance time
-- **Modern UI** – React + Vite + TailwindCSS + ShadCN components
+## ✨ Vision
+
+The **AI GM Engine** is designed to:
+
+- **Simulate living worlds** that progress on their own (time ticks, tensions shift, factions act).
+- **Give GMs control** via a unified **GM Screen** with HUD, event feed, map grid, party, and quests.
+- **Keep all data world-scoped**, so you can run multiple worlds in parallel without cross-contamination.
+- **Stay deterministic first** (simple systems generate events); later, **LLM flavor text** enriches the narrative.
 
 ---
 
-## Getting Started
+## 🔑 Features
+- **Unified Manager Interface** – CRUD editors with consistent ActionBar actions & keyboard shortcuts  
+- **GM Screen (play mode)** – world HUD, tension bar, event feed, map/locations, party pane, quests pane  
+- **World Naming System** – friendly world names with inline editing and display  
+- **Supabase Integration** – Postgres persistence, Row-Level Security, realtime events  
+- **Authentication System** – email/password login with secure sessions  
+- **Keyboard Accessibility** – N (new), Ctrl+S (save), Del (delete), R (refresh), V (validate)  
+- **Edge Functions** – optional server-side simulation (advance time, spawn rumors/events)  
+- **Modern UI** – React + Vite + TailwindCSS + ShadCN components  
+
+---
+
+## 🚀 Getting Started
 
 ### 1. Clone & Install
 ```bash
 git clone https://github.com/YOURNAME/ai_gm_engine.git
 cd ai_gm_engine
 npm install
-````
+```
 
 ### 2. Environment Variables
-
 Create a `.env` file in the project root:
 
 ```env
@@ -35,103 +50,67 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
 Restart your dev server after adding env vars.
 
 ### 3. Run Locally
-
 ```bash
 npm run dev
 ```
-
-Visit: [http://localhost:5173](http://localhost:5173)
+Visit [http://localhost:5173](http://localhost:5173)
 
 ---
 
-## Supabase Setup
+## 🗄️ Supabase Setup
 
 1. Create a Supabase project at [https://app.supabase.com](https://app.supabase.com).
-2. Go to **Project Settings → API**:
+2. Copy your **Project URL** and **anon key** (browser) and **service role key** (Edge Functions).
+3. Open **SQL Editor** and run the schema in [`/supabase/schema.sql`](./supabase/schema.sql).
+4. Enable **Row Level Security** and run the provided policies.
 
-   * Copy your `Project URL`
-   * Copy your `anon` key (for browser)
-   * Copy your `service_role` key (for server/Edge Functions)
-3. Open the **SQL Editor** and run the schema in [`/supabase/schema.sql`](./supabase/schema.sql) (see `docs/` if not present).
-4. Enable **Row Level Security** and run the provided policies (same script as above).
+### Tables
+- `worlds` – name, time, weather, tension, locations, owner  
+- `entities` – NPCs, PCs, monsters, etc. (with tags, personality, relationships)  
+- `factions` – organizations with resources, pressure, stability  
+- `arcs` – narrative threads with stages, progress, triggers  
+- `events` – immutable event log tied to worlds
 
-### Tables created:
-
-* `entities`
-* `factions`
-* `arcs`
-* `worlds`
-* `events`
-
-### How to Seed via SQL
-
-You can populate your database with sample data using these SQL snippets in the Supabase SQL Editor:
-
-#### Entities
+Use this SQL to export the database structure:
 ```sql
-INSERT INTO entities (id, name, tags, srd, personality, status, relationships) VALUES 
-('npc_mira', 'Mira Stonewind', '["npc", "ranger", "human"]', 
- '{"level": 3, "ancestry": "Human", "role": "Ranger", "alignment": "CG", "stats": {"str": 12, "dex": 18, "con": 14, "int": 10, "wis": 16, "cha": 11}, "hp": 28, "ac": 17, "saves": {"fortitude": 6, "reflex": 9, "will": 5}, "skills": {"survival": 8, "stealth": 7, "diplomacy": 3}, "abilities": ["Hunt Prey", "Twin Takedown"], "inventory": [{"name": "Longbow", "type": "weapon", "qty": 1}, {"name": "Healing Potion", "type": "consumable", "qty": 1}]}',
- '{"temperament": "quiet and observant", "ideals": ["freedom", "nature above civilization"], "fears": ["being caged"], "motivations": ["protect wildlands", "redeem family name"], "flaws": ["acts before asking"]}',
- '{"location": "greenfall_edge", "faction": "Rangers of the Vale", "mood": "cautious", "current_task": "patrol"}',
- '{"npc_raider_chief": "uncertain ally", "player": "ally"}');
+  select table_name, column_name, data_type
+  from information_schema.columns
+  where table_schema = 'public'
+  order by table_name, ordinal_position;
 ```
 
-#### Factions
-```sql
-INSERT INTO factions (id, name, tags, ideology, goals, pressure, stability, resources, relations, leaders) VALUES 
-('f_raiders', 'Ash Dune Riders', '["raiders", "nomads"]', 'Strength through freedom', 
- '["control trade routes", "undermine town council"]', 0.42, 0.58,
- '{"food": 40, "mounts": 25, "weapons": 60}',
- '{"f_town": -35, "f_rangers": -10}',
- '["npc_raider_chief"]');
+
+### Seed Example Data
+
+You can populate your database with sample entities, factions, worlds, arcs, and events using the provided script:
+
+```bash
+psql < docs/seeds.sql
 ```
 
-#### Worlds  
-```sql
-INSERT INTO worlds (id, time, weather, locations, factions, events, history_log, tension) VALUES 
-('world_greenfall', 'Day 12, 03:00', 'rain', 
- '["greenfall", "greenfall_edge", "old_road"]',
- '{"f_raiders": {"pressure": 0.42, "stability": 0.58}}',
- '["raider_scout_spotted", "storm_warning"]',
- '["Day 11: merchant caravan robbed"]',
- 0.47);
-```
-
-#### Arcs
-```sql
-INSERT INTO arcs (id, title, stage, goal, progress, triggers, beats, pressure_vector, owner) VALUES 
-('arc_cult_rise', 'Whispers Beneath Greenfall', 'rumors', 'destabilize settlement from within', 0.22,
- '["nightmares", "missing supplies"]',
- '["first rumor", "suspicious sermon", "disappearance"]',
- '{"f_town": 0.2, "f_cult": 0.5}',
- 'f_cult');
-```
-
-#### Events
-```sql
-INSERT INTO events (id, world_id, type, title, payload, priority, source, tags) VALUES 
-('event_rumor_001', 'world_greenfall', 'rumor', 'Strange Lights in the Woods', 
- '{"content": "Travelers report eerie blue lights dancing between the trees near the old shrine", "source": "merchant_caravan", "reliability": 0.7}',
- 1, 'npc_merchant', '["mystery", "supernatural"]'),
-('event_dialogue_001', 'world_greenfall', 'dialogue', 'Concerned Guard Captain', 
- '{"speaker": "npc_captain_hayes", "content": "We need more patrols. Something is stirring in the wilderness.", "mood": "worried", "location": "town_barracks"}',
- 2, 'tension_system', '["warning", "military"]');
-```
+Or copy/paste the contents of [`docs/seeds.sql`](./docs/seeds.sql) into the **Supabase SQL Editor**.
 
 ---
 
-## Development Notes
+## 🎮 Gameplay Loop
 
-* **CRUD:** The editor tabs let you create, update, delete, and import/export JSON definitions.
-* **Validation:** Uses [AJV](https://ajv.js.org/) for schema validation.
-* **Realtime:** Supabase Realtime can auto-sync entities/factions between clients.
-* **Storage Choice:** Default backend is Supabase (Postgres). You could also use Mongo, SQLite, or files if preferred.
-* **UI Components:** TailwindCSS + ShadCN (Tabs, Cards, Buttons, Sidebar).
+- **World View (macro)** – Advance time, tensions drift, global events fire.  
+- **Location View (meso)** – Select a town/zone; surface local factions, NPCs, rumors.  
+- **Encounter Mode (micro)** – Resolve discrete conflicts turn-by-turn, generate consequences.  
+
+The GM Screen ties these together into a single, glanceable dashboard.
 
 ---
 
-## Edge Functions
+## 🧩 Development Notes
+- **Validation** with AJV schemas for JSON definitions.  
+- **Realtime** sync for collaborative editing or multi-device play.  
+- **UI Components** built with TailwindCSS + ShadCN (Tabs, Cards, Buttons, Sidebar).  
+- **Storage** default is Supabase Postgres, but structure is JSON-first (portable to SQLite, Mongo, etc.).  
+
+---
+
+## ⚡ Edge Functions
 
 Optional server-side logic can live in Supabase Functions.
 
@@ -141,7 +120,7 @@ Example: **advanceWorldTick**
 supabase functions new advanceWorldTick
 ```
 
-Example function body:
+Example function body (`docs/functions/advanceWorldTick.ts`):
 
 ```ts
 Deno.serve(async (req) => {
@@ -161,21 +140,31 @@ supabase functions deploy advanceWorldTick --project-ref YOUR_PROJECT_REF
 
 ---
 
-## Roadmap
+## 🔮 Roadmap
 
-* [x] Entities Manager
-* [x] Factions & Arcs Manager
-* [x] World Editor
-* [x] Supabase integration (CRUD + Realtime)
-* [x] Events Manager with quick actions
-* [x] Realtime sync for Factions, Arcs, Worlds, Events
-* [ ] Edge Functions for simulation (advance time, spawn events)
-* [ ] Encounter mode (turn-based resolution)
-* [ ] Narrative generator driven by LLM
+### Phase 1 — Foundation
+- ✅ Auth with Supabase  
+- ✅ CRUD + realtime sync  
+- ✅ Worlds have names  
+- ✅ Unified ActionBar across managers  
+
+### Phase 2 — GM Screen
+- [ ] HUD (time, tension bar, world name)  
+- [ ] Event Feed with badges & filters  
+- [ ] Map grid & location selection  
+- [ ] Party pane (entities tagged `party`)  
+- [ ] Quests pane (active arcs)  
+
+### Phase 3 — Simulation Systems
+- [ ] Tick engine (advance time, drift tension, spawn rumors)  
+- [ ] Faction pressure & moves  
+- [ ] Encounter generator v0 (table-based)  
+
+### Phase 4 — AI Assist (optional)
+- [ ] Narrative flavor for events/encounters  
+- [ ] Procedural quest hooks  
 
 ---
 
-## License
-
+## 📄 License
 MIT — build cool things.
-

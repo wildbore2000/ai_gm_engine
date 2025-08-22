@@ -3,13 +3,15 @@ import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 export type WorldRow = {
   id: string;
+  name: string;
   time?: string;
   weather?: string;
-  locations: string[];      // text[]
+  locations: string[];      // text[] (schema now text[])
   factions: any;            // jsonb
   events: any[];            // jsonb array
   history_log: string[];    // jsonb array
   tension: number;
+  created_by?: string;
 };
 
 export async function listWorlds() {
@@ -21,9 +23,12 @@ export async function listWorlds() {
   return (data ?? []) as WorldRow[];
 }
 
-export async function createWorld(partial: Partial<WorldRow> = {}) {
-  // IMPORTANT: locations is string[]; factions/events/history are jsonb
+export async function createWorld(name: string, partial: Partial<WorldRow> = {}) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Must be authenticated to create world");
   const base: Omit<WorldRow, "id"> = {
+    created_by: user.id,
+    name,
     time: "Day 1, 00:00",
     weather: "clear",
     locations: [],
@@ -48,6 +53,17 @@ export async function upsertWorld(row: Partial<WorldRow> & { id: string }) {
   const { data, error } = await supabase
     .from("worlds")
     .upsert(row, { onConflict: "id" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as WorldRow;
+}
+
+export async function renameWorld(id: string, name: string) {
+  const { data, error } = await supabase
+    .from("worlds")
+    .update({ name })
+    .eq("id", id)
     .select()
     .single();
   if (error) throw error;

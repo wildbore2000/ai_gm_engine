@@ -1,9 +1,16 @@
 import { supabase } from "./supabase";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 export type EventRow = {
-  id: string; world_id: string; type: string; title?: string;
-  payload: any; priority: number; source?: string;
-  tags: string[]; expires_at?: string; created_at: string;
+  id: string; // UUID
+  world_id: string; // UUID
+  type: string;
+  title?: string;
+  payload: any;
+  priority: number;
+  source?: string;
+  tags: string[];
+  expires_at?: string;
+  created_at: string;
 };
 
 export async function listEvents(world_id: string): Promise<EventRow[]> {
@@ -20,9 +27,14 @@ export async function insertEvent(row: Omit<EventRow, "id"|"created_at">) {
   if (error) throw error; return data!;
 }
 
-export function onEventsChange(cb: (p: RealtimePostgresChangesPayload<any>) => void) {
+export async function deleteEvent(id: string) {
+  const { error } = await supabase.from("events").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export function onEventsChangeForWorld(world_id: string, cb: (p: RealtimePostgresChangesPayload<any>) => void) {
   return supabase
-    .channel("events-rt")
-    .on("postgres_changes", { event: "*", schema: "public", table: "events" }, cb)
+    .channel(`events-${world_id}`)
+    .on("postgres_changes", { event: "*", schema: "public", table: "events", filter: `world_id=eq.${world_id}` }, cb)
     .subscribe();
 }

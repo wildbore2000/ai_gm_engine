@@ -1,8 +1,17 @@
 import { supabase } from "./supabase";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 export type ArcRow = {
-  id:string; world_id: string; title:string; stage?:string; goal?:string;
-  progress:number; triggers:string[]; beats:string[]; pressure_vector:any; owner?:string;
+  id: string; // UUID
+  world_id: string; // UUID
+  title: string;
+  stage?: string;
+  goal?: string;
+  progress: number;
+  triggers: string[];
+  beats: string[];
+  pressure_vector: any;
+  owner?: string;
+  created_at: string;
 };
 export async function listArcs(worldId: string): Promise<ArcRow[]> {
   const { data, error } = await supabase.from("arcs")
