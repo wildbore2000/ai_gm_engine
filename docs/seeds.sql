@@ -10,7 +10,7 @@ create extension if not exists pgcrypto;
 
 do $$
 declare
-  owner uuid := '00000000-0000-0000-0000-000000000001';  -- TODO: replace with a real user UUID
+  owner uuid := '3f1c417b-dbe5-41ab-b5a5-bb4bc9564d6b';  -- Generated UUID for seed data owner
   w_id uuid := gen_random_uuid();
 begin
   -- WORLD

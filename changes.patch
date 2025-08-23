@@ -1,15 +1,10 @@
---- a/src/context/WorldContext.tsx
-+++ b/src/context/WorldContext.tsx
+--- a/supabase/functions/ai_recommend/index.ts
++++ b/supabase/functions/ai_recommend/index.ts
 @@
--  const [worldId, setWorldIdState] = useState<string | null>(null);
-+  const [worldId, setWorldIdState] = useState<string | null>(() => {
-+    try { return localStorage.getItem("worldId"); } catch { return null; }
-+  });
-@@
-   const setWorldId = useCallback((id: string | null) => {
-     setWorldIdState(id);
-+    try {
-+      if (id) localStorage.setItem("worldId", id);
-+      else localStorage.removeItem("worldId");
-+    } catch {}
-   }, []);
+-  const partyLevel = snapshot.entities?.length > 0 
+-    ? Math.max(1, Math.floor((snapshot.entities[0]?.level ?? 1) || 1))
+-    : 1;
++  // Read party array; default to level 1 if missing.
++  const first = Array.isArray(snapshot.party) && snapshot.party.length > 0 ? snapshot.party[0] : null;
++  const inferredLevel = Number(first?.srd?.level ?? first?.level ?? 1);
++  const partyLevel = Math.max(1, Math.floor(inferredLevel));

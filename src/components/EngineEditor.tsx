@@ -11,6 +11,8 @@ const EntitiesManager = lazy(() => import("./managers/EntitiesManager"));
 const FactionsManager = lazy(() => import("./managers/FactionsManager"));
 const ArcsManager = lazy(() => import("./managers/ArcsManager"));
 const EventsManager = lazy(() => import("./EventsManager"));
+const AIAdvisor = lazy(() => import("./AIAdvisor"));
+const AIAdvisorPanel = lazy(() => import("./AIAdvisorPanel"));
 
 // Loading fallback
 const TabLoadingFallback = () => (
@@ -242,45 +244,67 @@ const WorldContent = React.memo(({
         </div>
       </div>
       
-      <Tabs defaultValue="entities" className="flex-1 flex flex-col">
-        <TabsList className="w-full border-b border-slate-800 rounded-none bg-transparent p-0">
-          <TabsTrigger value="entities">Entities</TabsTrigger>
-          <TabsTrigger value="factions">Factions</TabsTrigger>
-          <TabsTrigger value="arcs">Arcs</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-        </TabsList>
+      {/* Main content area - two column layout */}
+      <div className="flex-1 flex gap-4 overflow-hidden">
+        {/* Left column - main tabs */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <Tabs defaultValue="entities" className="flex-1 flex flex-col">
+            <TabsList className="w-full border-b border-slate-800 rounded-none bg-transparent p-0">
+              <TabsTrigger value="entities">Entities</TabsTrigger>
+              <TabsTrigger value="factions">Factions</TabsTrigger>
+              <TabsTrigger value="arcs">Arcs</TabsTrigger>
+              <TabsTrigger value="events">Events</TabsTrigger>
+              <TabsTrigger value="advisor">AI Advisor</TabsTrigger>
+            </TabsList>
 
-        <div className="flex-1 overflow-auto">
-          <TabsContent value="entities">
-            <div className="p-4">
-              <Suspense fallback={<TabLoadingFallback />}>
-                <EntitiesManager worldId={worldId} />
-              </Suspense>
+            <div className="flex-1 overflow-auto">
+              <TabsContent value="entities">
+                <div className="p-4">
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    <EntitiesManager worldId={worldId} />
+                  </Suspense>
+                </div>
+              </TabsContent>
+              <TabsContent value="factions">
+                <div className="p-4">
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    <FactionsManager />
+                  </Suspense>
+                </div>
+              </TabsContent>
+              <TabsContent value="arcs">
+                <div className="p-4">
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    <ArcsManager />
+                  </Suspense>
+                </div>
+              </TabsContent>
+              <TabsContent value="events">
+                <div className="p-4">
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    <EventsManager worldId={worldId} />
+                  </Suspense>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="advisor">
+                <div className="p-4">
+                  <Suspense fallback={<TabLoadingFallback />}>
+                    <AIAdvisor worldId={worldId} />
+                  </Suspense>
+                </div>
+              </TabsContent>
             </div>
-          </TabsContent>
-          <TabsContent value="factions">
-            <div className="p-4">
-              <Suspense fallback={<TabLoadingFallback />}>
-                <FactionsManager />
-              </Suspense>
-            </div>
-          </TabsContent>
-          <TabsContent value="arcs">
-            <div className="p-4">
-              <Suspense fallback={<TabLoadingFallback />}>
-                <ArcsManager />
-              </Suspense>
-            </div>
-          </TabsContent>
-          <TabsContent value="events">
-            <div className="p-4">
-              <Suspense fallback={<TabLoadingFallback />}>
-                <EventsManager worldId={worldId} />
-              </Suspense>
-            </div>
-          </TabsContent>
+          </Tabs>
         </div>
-      </Tabs>
+
+        {/* Right column - AI Advisor Panel */}
+        <div className="w-80 flex-shrink-0 p-4 border-l border-slate-800 bg-slate-950/30">
+          <Suspense fallback={<TabLoadingFallback />}>
+            <AIAdvisorPanel worldId={worldId} />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 });

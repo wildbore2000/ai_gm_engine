@@ -7,6 +7,8 @@ import { listEvents, type EventRow } from "@/lib/events";
 import { listEntities } from "@/lib/entities";
 import { listArcs } from "@/lib/arcs";
 import { advanceWorldTick } from "@/lib/worlds";
+import HUDGoal from "@/components/HUDGoal";
+import { InvestigateRumorModal, PressureFactionModal } from "@/components/ActionModals";
 
 export default function GameScreen() {
   const { worldId } = useWorld();
@@ -16,6 +18,8 @@ export default function GameScreen() {
   const [arcs, setArcs] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<string|null>(null);
+  const [showRumor, setShowRumor] = useState<null | any>(null);
+  const [showMove, setShowMove] = useState<null | { move: any; factionId: string }>(null);
   const [loading, setLoading] = useState(true);
   const tensionPct = Math.max(0, Math.min(100, (world?.tension ?? 0) * 100)); // tension 0..1 -> 0..100
 
@@ -85,8 +89,34 @@ export default function GameScreen() {
     }]);
   }
 
-  if (!worldId) return <div className="p-6 text-slate-200">Select or create a world first.</div>;
-  if (loading) return <div className="p-6 text-slate-200">Loading world…</div>;
+  function renderSummary(ev: any) {
+    const getResultIcon = (degree: string) => {
+      if (degree?.includes("success")) return "✓";
+      if (degree?.includes("failure")) return "✕";
+      return "";
+    };
+
+    switch (ev.type) {
+      case "rumor":
+        return `Rumor spreads: ${ev.payload?.content ?? ev.title}`;
+      case "skill_result":
+        const skillIcon = getResultIcon(ev.payload?.degree);
+        return `${skillIcon} ${ev.payload?.actor ?? "Someone"} investigated "${ev.payload?.source_event_id}" → ${ev.payload?.degree} (${ev.payload?.total} vs DC ${ev.payload?.dc})`;
+      case "faction_pressure_result":
+        const factionIcon = getResultIcon(ev.payload?.degree);
+        return `${factionIcon} Pressured faction → ${ev.payload?.degree} (${ev.payload?.total} vs DC ${ev.payload?.dc})`;
+      case "faction_move":
+        return `Faction ${ev.payload?.faction_id} acts: ${ev.title ?? "move"}`;
+      case "discovery":
+        return `Discovery: ${ev.payload?.content ?? ev.title}`;
+      case "arc_development":
+        return `Arc advanced: ${ev.title}`;
+      case "weather":
+        return `Weather shifts: ${ev.payload?.content ?? ev.title}`;
+      default:
+        return ev.title ?? ev.type;
+    }
+  }
 
   const locations: string[] = Array.isArray(world?.locations) ? world.locations : [];
   const filteredEvents = events.filter(e => {
@@ -95,6 +125,43 @@ export default function GameScreen() {
     const tagOk = tagFilter ? tags.includes(tagFilter) : true;
     return locOk && tagOk;
   });
+
+  // Group events: nest results under their source events
+  const groupedEvents = useMemo(() => {
+    const groups: any[] = [];
+    const resultsBySource = new Map<string, any[]>();
+    
+    // First pass: collect all results by their source_event_id
+    filteredEvents.forEach(ev => {
+      if (ev.payload?.source_event_id && (ev.type === "skill_result" || ev.type === "faction_pressure_result")) {
+        const sourceId = ev.payload.source_event_id;
+        if (!resultsBySource.has(sourceId)) {
+          resultsBySource.set(sourceId, []);
+        }
+        resultsBySource.get(sourceId)!.push(ev);
+      }
+    });
+
+    // Second pass: build grouped structure
+    filteredEvents.forEach(ev => {
+      // Skip results that will be nested
+      if (ev.payload?.source_event_id && (ev.type === "skill_result" || ev.type === "faction_pressure_result")) {
+        return;
+      }
+      
+      // Add main event with any nested results
+      const eventGroup = {
+        ...ev,
+        children: resultsBySource.get(ev.id) || []
+      };
+      groups.push(eventGroup);
+    });
+
+    return groups.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [filteredEvents]);
+
+  if (!worldId) return <div className="p-6 text-slate-200">Select or create a world first.</div>;
+  if (loading) return <div className="p-6 text-slate-200">Loading world…</div>;
 
   return (
     <div className="h-screen bg-slate-950 text-white grid grid-rows-[auto,1fr]">
@@ -106,8 +173,9 @@ export default function GameScreen() {
         </div>
         <div className="flex items-center gap-3">
           <div className="w-48 bg-slate-800 h-2 rounded">
-            <div className="bg-indigo-500 h-2 rounded" style={{ width: `${tensionPct}%` }} />
+            <div className="bg-indigo-500 h-2 rounded transition-all duration-500" style={{ width: `${tensionPct}%` }} />
           </div>
+          <HUDGoal worldId={worldId!} />
           <button onClick={() => advanceWorldTick(worldId!, 1)} className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 flex items-center gap-1">
             <FastForward className="w-4 h-4" /> Advance Tick
           </button>
@@ -143,17 +211,44 @@ export default function GameScreen() {
             </div>
           </div>
           <div className="flex-1 overflow-auto divide-y divide-slate-800">
-            {filteredEvents.length === 0 ? <div className="p-3 text-slate-500 text-sm">No events</div> :
-              filteredEvents.map(ev => (
+            {groupedEvents.length === 0 ? <div className="p-3 text-slate-500 text-sm">No events</div> :
+              groupedEvents.map(ev => (
                 <div key={ev.id} className="p-2">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">{ev.title || ev.type}</div>
-                    <div className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 uppercase">{ev.type}</div>
+                  <div className="font-medium">{renderSummary(ev)}</div>
+                  <div className="text-xs text-slate-400">{new Date(ev.created_at).toLocaleString()}</div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    — {ev.type}{ev.tags?.length ? `, ${ev.tags.join(', ')}` : ''}
                   </div>
-                  {ev.payload?.content && <div className="text-sm text-slate-300">{ev.payload.content}</div>}
-                  {!!(ev.tags?.length) && <div className="mt-1 flex flex-wrap gap-1">
-                    {ev.tags.map((t:string) => <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400">#{t}</span>)}
-                  </div>}
+
+                  {/* NESTED CHILDREN */}
+                  {ev.children?.length > 0 && (
+                    <div className="ml-4 mt-2 space-y-1 border-l border-slate-700 pl-3">
+                      {ev.children.map((child: any) => (
+                        <div key={child.id}>
+                          <div className="font-medium text-sm">{renderSummary(child)}</div>
+                          <div className="text-xs text-slate-400">{new Date(child.created_at).toLocaleString()}</div>
+                          <div className="text-xs text-slate-500">
+                            — {child.type}{child.tags?.length ? `, ${child.tags.join(', ')}` : ''}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ACTIONS */}
+                  <div className="mt-2 flex gap-2">
+                    {ev.type === "rumor" && (
+                      <button onClick={() => setShowRumor(ev)} className="text-xs px-2 py-1 rounded bg-indigo-700 hover:bg-indigo-600">
+                        Investigate
+                      </button>
+                    )}
+                    {ev.type === "faction_move" && (
+                      <button onClick={() => setShowMove({ move: ev, factionId: ev.payload?.faction_id ?? "f_bandits" })}
+                              className="text-xs px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-600">
+                        Pressure Faction
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))
             }
@@ -188,6 +283,26 @@ export default function GameScreen() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {showRumor && (
+        <InvestigateRumorModal
+          worldId={worldId!}
+          rumor={showRumor}
+          party={party}
+          onClose={() => setShowRumor(null)}
+          onDidApply={() => {/* optional: flash UI */}}
+        />
+      )}
+      {showMove && (
+        <PressureFactionModal
+          worldId={worldId!}
+          move={showMove.move}
+          factionId={showMove.factionId}
+          onClose={() => setShowMove(null)}
+          onDidApply={() => {/* optional: flash UI */}}
+        />
+      )}
     </div>
   );
 }
